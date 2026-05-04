@@ -1,0 +1,19 @@
+{
+  "expo": {
+    "name": "Senior Citizen Services Portal",
+    "slug": "senior-citizen-services-portal",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "web": {
+      "bundler": "metro",
+      "output": "single",
+      "favicon": "./assets/mswdo-logo.jpg"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "android": {
+      "package": "com.alegria.mswdo.seniorcitizenportal"
+    }
+  }
+}

@@ -1,0 +1,5 @@
+.expo
+.temp
+dist
+expo*.log
+node_modules
