@@ -3,10 +3,10 @@ import { Pressable, StyleSheet, Text, View } from "react-native";
 import { theme } from "../theme";
 
 const tabs = [
-  { key: "home", label: "Home", badge: "H" },
-  { key: "dashboard", label: "Dashboard", badge: "D" },
-  { key: "payout", label: "Payout", badge: "P" },
-  { key: "profile", label: "Profile", badge: "PR" }
+  { key: "home", label: "Home", badge: "HM" },
+  { key: "requests", label: "Requests", badge: "RQ" },
+  { key: "inbox", label: "Inbox", badge: "IN" },
+  { key: "profile", label: "Profile", badge: "ME" }
 ];
 
 export default function BottomTabBar({ activeScreen, onNavigate }) {
@@ -46,7 +46,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    minHeight: 52,
+    minHeight: 54,
     borderRadius: 20,
     gap: 4,
     paddingTop: 4
@@ -55,13 +55,13 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.surfaceAlt
   },
   badge: {
-    minWidth: 26,
-    height: 26,
-    borderRadius: 13,
+    minWidth: 30,
+    height: 28,
+    borderRadius: 14,
     backgroundColor: theme.colors.surfaceAlt,
     alignItems: "center",
     justifyContent: "center",
-    paddingHorizontal: 6
+    paddingHorizontal: 7
   },
   activeBadge: {
     backgroundColor: theme.colors.navy

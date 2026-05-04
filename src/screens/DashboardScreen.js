@@ -1,122 +1,141 @@
 import React from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import ScreenContainer from "../components/ScreenContainer";
-import { dashboardAnnouncements } from "../data/portalData";
 import { theme } from "../theme";
+import {
+  getApplicationCounts,
+  getApplicationProgress,
+  getApplicationStatusMeta,
+  getServiceByKey
+} from "../utils/portalLogic";
 
-export default function DashboardScreen({ user, payoutStatus, onNavigate }) {
+export default function DashboardScreen({
+  user,
+  applications,
+  bannerMessage,
+  onClearBanner,
+  onOpenService,
+  onStartApplication,
+  onNavigate
+}) {
+  const counts = getApplicationCounts(applications);
+
   return (
-    <ScreenContainer activeScreen="dashboard" onNavigate={onNavigate} showTabs>
+    <ScreenContainer activeScreen="requests" onNavigate={onNavigate} showTabs>
       <View style={styles.banner}>
-        <View style={styles.bannerTop}>
-          <View>
-            <Text style={styles.bannerKicker}>ACCOUNT OVERVIEW</Text>
-            <Text style={styles.bannerTitle}>{user.profile.firstName}, welcome back.</Text>
-          </View>
-          <View style={styles.noticeButton}>
-            <Text style={styles.noticeButtonText}>LIVE</Text>
-          </View>
-        </View>
+        <Text style={styles.bannerKicker}>MY REQUESTS</Text>
+        <Text style={styles.bannerTitle}>{user.profile.firstName}, here is your service activity.</Text>
         <Text style={styles.bannerCopy}>
-          Review your application details, payout schedule, and the latest public updates.
+          Track all active cases, document readiness, and next follow-up steps in one place.
         </Text>
       </View>
 
-      <View style={styles.card}>
-        <View style={styles.cardHeader}>
-          <Text style={styles.cardTitle}>Application Status</Text>
-          <Text style={styles.cardMeta}>Updated today</Text>
-        </View>
-
-        <View style={styles.statusPanel}>
-          <View style={styles.statusRow}>
-            <View style={styles.statusBadge}>
-              <Text style={styles.statusBadgeText}>PENDING REVIEW</Text>
-            </View>
-          </View>
-          <Text style={styles.copy}>
-            Your application is currently being reviewed by the MSWDO staff.
-          </Text>
-        </View>
-
-        <View style={styles.statsGrid}>
-          <View style={styles.statCard}>
-            <Text style={styles.statLabel}>Reference ID</Text>
-            <Text style={styles.statValue}>{user.profile.referenceId}</Text>
-          </View>
-          <View style={styles.statCard}>
-            <Text style={styles.statLabel}>Barangay</Text>
-            <Text style={styles.statValue}>{user.profile.barangay}</Text>
-          </View>
-        </View>
-      </View>
-
-      <View style={styles.card}>
-        <View style={styles.cardHeader}>
-          <Text style={styles.cardTitle}>Application Summary</Text>
-          <Pressable onPress={() => onNavigate("profile")}>
-            <Text style={styles.viewLink}>View</Text>
+      {bannerMessage ? (
+        <View style={styles.successBanner}>
+          <Text style={styles.successText}>{bannerMessage}</Text>
+          <Pressable onPress={onClearBanner}>
+            <Text style={styles.dismissText}>Hide</Text>
           </Pressable>
         </View>
-        <SummaryRow label="Reference ID" value={user.profile.referenceId} highlight />
-        <SummaryRow label="Submission Date" value={user.createdAtLabel} />
-        <SummaryRow label="Barangay" value={user.profile.barangay} />
+      ) : null}
+
+      <View style={styles.statsGrid}>
+        <MetricCard label="Total Requests" value={String(counts.total)} />
+        <MetricCard label="Active Cases" value={String(counts.active)} />
+        <MetricCard label="Urgent Flags" value={String(counts.urgent)} />
       </View>
 
-      <Pressable
-        style={[styles.card, payoutStatus.included ? styles.payoutCardSuccess : styles.payoutCardPending]}
-        onPress={() => onNavigate("payout")}
-      >
-        <View style={styles.payoutCardRow}>
-          <View style={styles.payoutCardLeft}>
-            <View
-              style={[
-                styles.payoutBadge,
-                payoutStatus.included ? styles.payoutBadgeSuccess : styles.payoutBadgePending
-              ]}
+      {applications.length ? (
+        applications.map((application) => {
+          const service = getServiceByKey(application.serviceKey);
+          const statusMeta = getApplicationStatusMeta(application, service);
+          const progress = getApplicationProgress(service, application.status);
+          const completedDocs = application.checklist.filter((item) => item.done).length;
+
+          return (
+            <Pressable
+              key={application.id}
+              style={styles.card}
+              onPress={() => onOpenService(application.serviceKey)}
             >
-              <Text
+              <View style={styles.cardHeader}>
+                <View style={styles.cardHeaderMain}>
+                  <Text style={styles.cardTitle}>{application.serviceTitle}</Text>
+                  <Text style={styles.cardMeta}>{application.id}</Text>
+                </View>
+                <Text style={styles.cardUpdated}>{application.updatedAtLabel}</Text>
+              </View>
+
+              <View
                 style={[
-                  styles.payoutBadgeText,
-                  payoutStatus.included ? styles.payoutBadgeTextSuccess : styles.payoutBadgeTextPending
+                  styles.statusPill,
+                  statusMeta.tone === "success" && styles.statusPillSuccess,
+                  statusMeta.tone === "warning" && styles.statusPillWarning,
+                  statusMeta.tone === "critical" && styles.statusPillCritical
                 ]}
               >
-                PAYOUT
-              </Text>
-            </View>
-            <View>
-              <Text style={styles.payoutCardTitle}>{payoutStatus.label}</Text>
-              <Text style={styles.payoutCardBody}>{payoutStatus.detail}</Text>
-            </View>
-          </View>
-          <Text style={styles.payoutCardArrow}>GO</Text>
-        </View>
-      </Pressable>
+                <Text
+                  style={[
+                    styles.statusPillText,
+                    statusMeta.tone === "success" && styles.statusPillTextSuccess,
+                    statusMeta.tone === "warning" && styles.statusPillTextWarning,
+                    statusMeta.tone === "critical" && styles.statusPillTextCritical
+                  ]}
+                >
+                  {statusMeta.label}
+                </Text>
+              </View>
 
-      <View style={styles.card}>
-        <View style={styles.cardHeader}>
-          <Text style={styles.cardTitle}>Announcements</Text>
-          <Text style={styles.viewLink}>Latest</Text>
+              <Text style={styles.concernType}>{application.concernType}</Text>
+              <Text style={styles.copy}>{application.notes}</Text>
+
+              <View style={styles.progressHeader}>
+                <Text style={styles.progressLabel}>Workflow progress</Text>
+                <Text style={styles.progressValue}>{progress.percent}%</Text>
+              </View>
+              <View style={styles.progressTrack}>
+                <View style={[styles.progressFill, { width: `${progress.percent}%` }]} />
+              </View>
+
+              <View style={styles.detailRow}>
+                <DetailChip label={`${completedDocs}/${application.checklist.length} requirements ready`} />
+                <DetailChip label={application.priority} />
+                <DetailChip label={application.contactPreference} />
+              </View>
+
+              <Text style={styles.linkText}>Open service desk</Text>
+            </Pressable>
+          );
+        })
+      ) : (
+        <View style={styles.emptyCard}>
+          <Text style={styles.emptyTitle}>No requests yet</Text>
+          <Text style={styles.copy}>
+            Start with the service that matches the resident&apos;s concern, then complete the guided form
+            to place it in the MSWDO queue.
+          </Text>
+          <Pressable style={styles.primaryButton} onPress={() => onStartApplication("assistance")}>
+            <Text style={styles.primaryButtonText}>Start Assistance Request</Text>
+          </Pressable>
         </View>
-        {dashboardAnnouncements.map((item, index) => (
-          <View key={item.title} style={[styles.noticeCard, index > 0 && styles.noticeCardSpaced]}>
-            <View style={styles.noticeMarker} />
-            <View style={styles.noticeBody}>
-              <Text style={styles.noticeTitle}>{item.title}</Text>
-              <Text style={styles.noticeText}>{item.body}</Text>
-            </View>
-          </View>
-        ))}
-      </View>
+      )}
     </ScreenContainer>
   );
 }
 
-function SummaryRow({ label, value, highlight }) {
+function MetricCard({ label, value }) {
   return (
-    <View style={styles.summaryRow}>
-      <Text style={styles.summaryLabel}>{label}</Text>
-      <Text style={[styles.summaryValue, highlight && styles.summaryValueHighlight]}>{value}</Text>
+    <View style={styles.metricCard}>
+      <Text style={styles.metricValue}>{value}</Text>
+      <Text style={styles.metricLabel}>{label}</Text>
+    </View>
+  );
+}
+
+function DetailChip({ label }) {
+  return (
+    <View style={styles.detailChip}>
+      <Text style={styles.detailChipText}>{label}</Text>
     </View>
   );
 }
@@ -126,45 +145,72 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.navy,
     borderRadius: theme.radius.xl,
     padding: 20,
-    marginBottom: 16,
-    gap: 10
-  },
-  bannerTop: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-start"
+    marginBottom: 16
   },
   bannerKicker: {
-    color: "rgba(255,255,255,0.7)",
-    fontSize: 12,
-    fontWeight: "700",
-    marginBottom: 4
+    color: "rgba(255,255,255,0.68)",
+    fontSize: 11,
+    fontWeight: "900",
+    letterSpacing: 0.6,
+    marginBottom: 6
   },
   bannerTitle: {
     color: theme.colors.white,
     fontSize: 26,
     lineHeight: 32,
     fontWeight: "900",
-    maxWidth: 220
-  },
-  noticeButton: {
-    minWidth: 44,
-    height: 44,
-    borderRadius: 14,
-    backgroundColor: "rgba(255,255,255,0.15)",
-    alignItems: "center",
-    justifyContent: "center",
-    paddingHorizontal: 10
-  },
-  noticeButtonText: {
-    color: theme.colors.white,
-    fontSize: 11,
-    fontWeight: "900"
+    marginBottom: 8
   },
   bannerCopy: {
     color: "rgba(255,255,255,0.82)",
-    lineHeight: 20,
-    fontSize: 13
+    fontSize: 13,
+    lineHeight: 20
+  },
+  successBanner: {
+    backgroundColor: theme.colors.greenSoft,
+    borderWidth: 1,
+    borderColor: "#C9E8DA",
+    borderRadius: 18,
+    padding: 14,
+    marginBottom: 16,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    gap: 12
+  },
+  successText: {
+    color: theme.colors.text,
+    flex: 1,
+    fontWeight: "700",
+    lineHeight: 20
+  },
+  dismissText: {
+    color: theme.colors.green,
+    fontWeight: "900"
+  },
+  statsGrid: {
+    flexDirection: "row",
+    gap: 10,
+    marginBottom: 16
+  },
+  metricCard: {
+    flex: 1,
+    backgroundColor: theme.colors.white,
+    borderRadius: 18,
+    padding: 14,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+    ...theme.shadow
+  },
+  metricValue: {
+    color: theme.colors.navy,
+    fontSize: 22,
+    fontWeight: "900"
+  },
+  metricLabel: {
+    color: theme.colors.muted,
+    fontSize: 11,
+    fontWeight: "700",
+    marginTop: 5
   },
   card: {
     backgroundColor: theme.colors.white,
@@ -175,11 +221,27 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     ...theme.shadow
   },
+  emptyCard: {
+    backgroundColor: theme.colors.white,
+    borderRadius: theme.radius.lg,
+    borderWidth: 1,
+    borderColor: theme.colors.border,
+    padding: 20
+  },
+  emptyTitle: {
+    color: theme.colors.text,
+    fontSize: 18,
+    fontWeight: "900",
+    marginBottom: 8
+  },
   cardHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 14
+    gap: 12,
+    marginBottom: 10
+  },
+  cardHeaderMain: {
+    flex: 1
   },
   cardTitle: {
     color: theme.colors.text,
@@ -189,178 +251,119 @@ const styles = StyleSheet.create({
   cardMeta: {
     color: theme.colors.muted,
     fontSize: 12,
-    fontWeight: "600"
+    fontWeight: "700",
+    marginTop: 4
   },
-  statusPanel: {
-    borderRadius: 18,
-    padding: 14,
-    backgroundColor: theme.colors.surface,
-    marginBottom: 14
+  cardUpdated: {
+    color: theme.colors.muted,
+    fontSize: 12,
+    fontWeight: "700"
   },
-  viewLink: {
-    color: theme.colors.blue,
-    fontWeight: "800",
-    fontSize: 13
-  },
-  statusRow: {
+  statusPill: {
+    alignSelf: "flex-start",
+    backgroundColor: theme.colors.blueSoft,
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+    borderRadius: 999,
     marginBottom: 10
   },
-  statusBadge: {
-    alignSelf: "flex-start",
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: 999,
-    backgroundColor: theme.colors.goldSoft,
-    borderWidth: 1,
-    borderColor: "#F0D060"
+  statusPillSuccess: {
+    backgroundColor: theme.colors.greenSoft
   },
-  statusBadgeText: {
-    color: "#A46C00",
-    fontWeight: "900",
-    fontSize: 12,
-    letterSpacing: 0.4
+  statusPillWarning: {
+    backgroundColor: theme.colors.goldSoft
+  },
+  statusPillCritical: {
+    backgroundColor: theme.colors.roseSoft
+  },
+  statusPillText: {
+    color: theme.colors.blue,
+    fontSize: 11,
+    fontWeight: "900"
+  },
+  statusPillTextSuccess: {
+    color: theme.colors.green
+  },
+  statusPillTextWarning: {
+    color: theme.colors.gold
+  },
+  statusPillTextCritical: {
+    color: theme.colors.rose
+  },
+  concernType: {
+    color: theme.colors.navy,
+    fontWeight: "800",
+    fontSize: 14,
+    marginBottom: 6
   },
   copy: {
     color: theme.colors.muted,
-    lineHeight: 20,
-    fontSize: 13
+    fontSize: 13,
+    lineHeight: 20
   },
-  statsGrid: {
+  progressHeader: {
     flexDirection: "row",
-    gap: 10
+    justifyContent: "space-between",
+    marginTop: 14,
+    marginBottom: 8
   },
-  statCard: {
-    flex: 1,
-    borderRadius: 16,
+  progressLabel: {
+    color: theme.colors.text,
+    fontWeight: "700",
+    fontSize: 12
+  },
+  progressValue: {
+    color: theme.colors.navy,
+    fontWeight: "900",
+    fontSize: 12
+  },
+  progressTrack: {
+    height: 10,
+    borderRadius: 999,
     backgroundColor: theme.colors.surfaceAlt,
-    padding: 12,
+    overflow: "hidden"
+  },
+  progressFill: {
+    height: "100%",
+    backgroundColor: theme.colors.blue,
+    borderRadius: 999
+  },
+  detailRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
+    marginTop: 14
+  },
+  detailChip: {
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    borderRadius: 999,
+    backgroundColor: theme.colors.surface,
     borderWidth: 1,
     borderColor: theme.colors.borderLight
   },
-  statLabel: {
-    color: theme.colors.muted,
-    fontWeight: "600",
-    fontSize: 11,
-    marginBottom: 6
-  },
-  statValue: {
-    color: theme.colors.navy,
-    fontWeight: "800",
-    fontSize: 13
-  },
-  summaryRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 12,
-    alignItems: "center"
-  },
-  summaryLabel: {
-    color: theme.colors.muted,
-    fontWeight: "600",
-    fontSize: 13
-  },
-  summaryValue: {
+  detailChipText: {
     color: theme.colors.text,
-    fontWeight: "800",
-    maxWidth: "55%",
-    textAlign: "right",
-    fontSize: 13
+    fontSize: 11,
+    fontWeight: "700"
   },
-  summaryValueHighlight: {
-    color: theme.colors.navy,
-    fontSize: 14
+  linkText: {
+    color: theme.colors.blue,
+    fontSize: 13,
+    fontWeight: "900",
+    marginTop: 14
   },
-  payoutCardSuccess: {
-    backgroundColor: theme.colors.greenSoft,
-    borderColor: "#A5D6BE"
-  },
-  payoutCardPending: {
-    backgroundColor: theme.colors.goldSoft,
-    borderColor: "#F0D060"
-  },
-  payoutCardRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between"
-  },
-  payoutCardLeft: {
-    flexDirection: "row",
-    gap: 12,
-    alignItems: "flex-start",
-    flex: 1
-  },
-  payoutBadge: {
-    minWidth: 56,
-    height: 28,
-    borderRadius: 14,
+  primaryButton: {
+    minHeight: 56,
+    borderRadius: 18,
+    backgroundColor: theme.colors.navy,
     alignItems: "center",
     justifyContent: "center",
-    paddingHorizontal: 8
+    marginTop: 16
   },
-  payoutBadgeSuccess: {
-    backgroundColor: "rgba(26,140,94,0.14)"
-  },
-  payoutBadgePending: {
-    backgroundColor: "rgba(245,200,66,0.24)"
-  },
-  payoutBadgeText: {
-    fontSize: 10,
-    fontWeight: "900",
-    letterSpacing: 0.4
-  },
-  payoutBadgeTextSuccess: {
-    color: theme.colors.green
-  },
-  payoutBadgeTextPending: {
-    color: "#9A6A00"
-  },
-  payoutCardTitle: {
-    color: theme.colors.navy,
-    fontWeight: "900",
-    fontSize: 16,
-    marginBottom: 4
-  },
-  payoutCardBody: {
-    color: theme.colors.muted,
-    fontSize: 12,
-    lineHeight: 18,
-    maxWidth: 220
-  },
-  payoutCardArrow: {
-    color: theme.colors.navy,
-    fontSize: 12,
+  primaryButtonText: {
+    color: theme.colors.white,
+    fontSize: 15,
     fontWeight: "900"
-  },
-  noticeCard: {
-    flexDirection: "row",
-    gap: 10,
-    alignItems: "flex-start"
-  },
-  noticeCardSpaced: {
-    marginTop: 14,
-    paddingTop: 14,
-    borderTopWidth: 1,
-    borderTopColor: theme.colors.borderLight
-  },
-  noticeMarker: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-    backgroundColor: theme.colors.blue,
-    marginTop: 5
-  },
-  noticeBody: {
-    flex: 1,
-    gap: 3
-  },
-  noticeTitle: {
-    color: theme.colors.text,
-    fontWeight: "800",
-    fontSize: 14
-  },
-  noticeText: {
-    color: theme.colors.muted,
-    lineHeight: 18,
-    fontSize: 13
   }
 });

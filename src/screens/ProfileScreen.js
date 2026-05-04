@@ -1,10 +1,52 @@
-import React from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import React, { useEffect, useMemo, useState } from "react";
+import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import ScreenContainer from "../components/ScreenContainer";
+import { barangays } from "../data/portalData";
 import { theme } from "../theme";
+import { formatApplicantAddress, getProfileCompletion } from "../utils/portalLogic";
 
-export default function ProfileScreen({ user, onNavigate, onLogout }) {
+export default function ProfileScreen({ user, onNavigate, onLogout, onSaveProfile, message }) {
   const initial = user.profile.firstName.slice(0, 1).toUpperCase();
+  const completion = getProfileCompletion(user.profile);
+  const [isEditing, setIsEditing] = useState(false);
+  const [draft, setDraft] = useState({
+    phone: user.profile.phone || "",
+    houseNo: user.profile.houseNo || "",
+    street: user.profile.street || "",
+    barangay: user.profile.barangay || "",
+    city: user.profile.city || "",
+    province: user.profile.province || "",
+    accountRole: user.profile.accountRole || "Citizen"
+  });
+
+  useEffect(() => {
+    setDraft({
+      phone: user.profile.phone || "",
+      houseNo: user.profile.houseNo || "",
+      street: user.profile.street || "",
+      barangay: user.profile.barangay || "",
+      city: user.profile.city || "",
+      province: user.profile.province || "",
+      accountRole: user.profile.accountRole || "Citizen"
+    });
+  }, [user]);
+
+  const addressPreview = useMemo(() => formatApplicantAddress(user.profile), [user.profile]);
+
+  function updateDraft(field, value) {
+    setDraft((current) => ({
+      ...current,
+      [field]: value
+    }));
+  }
+
+  function handleSave() {
+    const saved = onSaveProfile(draft);
+
+    if (saved) {
+      setIsEditing(false);
+    }
+  }
 
   return (
     <ScreenContainer activeScreen="profile" onNavigate={onNavigate} showTabs>
@@ -15,21 +57,29 @@ export default function ProfileScreen({ user, onNavigate, onLogout }) {
           </View>
         </View>
         <Text style={styles.name}>{user.profile.fullName}</Text>
-        <View style={styles.verifiedTag}>
-          <Text style={styles.verifiedText}>Verified Applicant</Text>
-        </View>
+        <Text style={styles.roleTag}>{user.profile.accountRole || "Citizen"}</Text>
         <Text style={styles.referenceId}>Ref: {user.profile.referenceId}</Text>
       </View>
 
       <View style={styles.card}>
         <View style={styles.cardHeader}>
-          <Text style={styles.cardTitle}>Applicant Information</Text>
-          <Pressable>
-            <Text style={styles.editLink}>Edit</Text>
-          </Pressable>
+          <Text style={styles.cardTitle}>Account Snapshot</Text>
+          <Text style={styles.editLink}>{completion.score}% complete</Text>
+        </View>
+        <InfoRow label="Email Address" value={user.email} />
+        <InfoRow label="Saved Address" value={addressPreview || "-"} />
+        <InfoRow
+          label="Missing Items"
+          value={completion.missing.length ? completion.missing.join(", ") : "Profile is ready for follow-up."}
+        />
+      </View>
+
+      <View style={styles.card}>
+        <View style={styles.cardHeader}>
+          <Text style={styles.cardTitle}>Basic Information</Text>
+          <Text style={styles.editLink}>Read only</Text>
         </View>
         <InfoRow label="Reference ID" value={user.profile.referenceId} />
-        <InfoRow label="Barangay" value={user.profile.barangay} />
         <InfoRow label="Birth Date" value={user.profile.birthDate} />
         <InfoRow label="Age" value={`${user.profile.age} years old`} />
         <InfoRow label="Sex" value={user.profile.sex || "-"} />
@@ -38,17 +88,85 @@ export default function ProfileScreen({ user, onNavigate, onLogout }) {
 
       <View style={styles.card}>
         <View style={styles.cardHeader}>
-          <Text style={styles.cardTitle}>Contact Information</Text>
-          <Pressable>
-            <Text style={styles.editLink}>Edit</Text>
+          <Text style={styles.cardTitle}>Contact and Address</Text>
+          <Pressable onPress={() => setIsEditing((current) => !current)}>
+            <Text style={styles.editLink}>{isEditing ? "Cancel" : "Edit"}</Text>
           </Pressable>
         </View>
-        <InfoRow label="Mobile Number" value={user.profile.phone || "-"} />
-        <InfoRow label="Email Address" value={user.email} />
-        <InfoRow
-          label="Address"
-          value={`${user.profile.street || "-"}, ${user.profile.barangay}, ${user.profile.city}`}
-        />
+
+        {isEditing ? (
+          <View>
+            <InputBlock
+              label="Mobile Number"
+              value={draft.phone}
+              onChangeText={(value) => updateDraft("phone", value)}
+              placeholder="09XX XXX XXXX"
+            />
+            <InputBlock
+              label="House No. / Purok"
+              value={draft.houseNo}
+              onChangeText={(value) => updateDraft("houseNo", value)}
+              placeholder="Purok 2"
+            />
+            <InputBlock
+              label="Street / Sitio"
+              value={draft.street}
+              onChangeText={(value) => updateDraft("street", value)}
+              placeholder="Poblacion"
+            />
+            <Text style={styles.inputLabel}>Barangay</Text>
+            <View style={styles.barangayGrid}>
+              {barangays.map((barangay) => {
+                const active = draft.barangay === barangay;
+
+                return (
+                  <Pressable
+                    key={barangay}
+                    style={[styles.barangayChip, active && styles.barangayChipActive]}
+                    onPress={() => updateDraft("barangay", barangay)}
+                  >
+                    <Text style={[styles.barangayChipText, active && styles.barangayChipTextActive]}>
+                      {barangay}
+                    </Text>
+                  </Pressable>
+                );
+              })}
+            </View>
+            <InputBlock
+              label="City / Municipality"
+              value={draft.city}
+              onChangeText={(value) => updateDraft("city", value)}
+              placeholder="Alegria"
+            />
+            <InputBlock
+              label="Province"
+              value={draft.province}
+              onChangeText={(value) => updateDraft("province", value)}
+              placeholder="Surigao del Norte"
+            />
+            <InputBlock
+              label="Account Role"
+              value={draft.accountRole}
+              onChangeText={(value) => updateDraft("accountRole", value)}
+              placeholder="Citizen"
+            />
+            <Pressable style={styles.saveButton} onPress={handleSave}>
+              <Text style={styles.saveButtonText}>Save changes</Text>
+            </Pressable>
+          </View>
+        ) : (
+          <View>
+            <InfoRow label="Mobile Number" value={user.profile.phone || "-"} />
+            <InfoRow label="Address" value={addressPreview || "-"} />
+            <InfoRow label="Account Role" value={user.profile.accountRole || "Citizen"} />
+          </View>
+        )}
+
+        {message ? (
+          <View style={styles.messageCard}>
+            <Text style={styles.messageText}>{message}</Text>
+          </View>
+        ) : null}
       </View>
 
       <Pressable style={styles.logoutButton} onPress={onLogout}>
@@ -63,6 +181,21 @@ function InfoRow({ label, value }) {
     <View style={styles.infoRow}>
       <Text style={styles.infoLabel}>{label}</Text>
       <Text style={styles.infoValue}>{value}</Text>
+    </View>
+  );
+}
+
+function InputBlock({ label, value, onChangeText, placeholder }) {
+  return (
+    <View style={styles.inputBlock}>
+      <Text style={styles.inputLabel}>{label}</Text>
+      <TextInput
+        style={styles.input}
+        value={value}
+        onChangeText={onChangeText}
+        placeholder={placeholder}
+        placeholderTextColor={theme.colors.mutedLight}
+      />
     </View>
   );
 }
@@ -105,17 +238,12 @@ const styles = StyleSheet.create({
     fontWeight: "900",
     textAlign: "center"
   },
-  verifiedTag: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
+  roleTag: {
+    color: theme.colors.navyDeep,
+    backgroundColor: theme.colors.goldSoft,
+    borderRadius: 999,
     paddingHorizontal: 14,
     paddingVertical: 7,
-    borderRadius: 999,
-    backgroundColor: theme.colors.greenSoft
-  },
-  verifiedText: {
-    color: theme.colors.green,
     fontWeight: "800",
     fontSize: 13
   },
@@ -149,6 +277,64 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     fontSize: 13
   },
+  inputBlock: {
+    marginBottom: 14
+  },
+  inputLabel: {
+    color: theme.colors.text,
+    fontWeight: "700",
+    fontSize: 13,
+    marginBottom: 8
+  },
+  input: {
+    minHeight: 54,
+    borderRadius: 14,
+    backgroundColor: theme.colors.surface,
+    borderWidth: 1.5,
+    borderColor: theme.colors.border,
+    paddingHorizontal: 14,
+    color: theme.colors.text,
+    fontSize: 15
+  },
+  barangayGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 8,
+    marginBottom: 14
+  },
+  barangayChip: {
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    borderRadius: 12,
+    backgroundColor: theme.colors.surfaceAlt,
+    borderWidth: 1,
+    borderColor: theme.colors.border
+  },
+  barangayChipActive: {
+    backgroundColor: theme.colors.blueSoft,
+    borderColor: theme.colors.blue
+  },
+  barangayChipText: {
+    color: theme.colors.text,
+    fontSize: 12,
+    fontWeight: "700"
+  },
+  barangayChipTextActive: {
+    color: theme.colors.blue
+  },
+  saveButton: {
+    minHeight: 54,
+    borderRadius: 16,
+    backgroundColor: theme.colors.navy,
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 4
+  },
+  saveButtonText: {
+    color: theme.colors.white,
+    fontWeight: "900",
+    fontSize: 15
+  },
   infoRow: {
     paddingVertical: 10,
     borderBottomWidth: 1,
@@ -165,6 +351,20 @@ const styles = StyleSheet.create({
     fontWeight: "800",
     fontSize: 14,
     lineHeight: 20
+  },
+  messageCard: {
+    marginTop: 14,
+    borderRadius: 14,
+    backgroundColor: theme.colors.greenSoft,
+    borderWidth: 1,
+    borderColor: "#A5D6BE",
+    padding: 12
+  },
+  messageText: {
+    color: theme.colors.text,
+    fontSize: 12,
+    lineHeight: 18,
+    fontWeight: "700"
   },
   logoutButton: {
     minHeight: 56,

@@ -1,7 +1,7 @@
 import React from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import ScreenContainer from "../components/ScreenContainer";
-import { payoutBulletin } from "../data/portalData";
+import { payoutBulletin, supportDetails } from "../data/portalData";
 import { theme } from "../theme";
 
 export default function PayoutScreen({ payoutStatus, onNavigate }) {
@@ -48,6 +48,14 @@ export default function PayoutScreen({ payoutStatus, onNavigate }) {
           <Text style={styles.reminderTitle}>Reminder</Text>
           <Text style={styles.reminderText}>{payoutStatus.helper}</Text>
         </View>
+      </View>
+
+      <View style={styles.card}>
+        <Text style={styles.cardTitle}>Need Help?</Text>
+        <DetailRow label="Office" value={supportDetails.office} />
+        <DetailRow label="Mobile" value={supportDetails.mobile} />
+        <DetailRow label="Email" value={supportDetails.email} />
+        <DetailRow label="Office Hours" value={supportDetails.hours} />
       </View>
 
       <Pressable style={styles.primaryButton} onPress={() => onNavigate("dashboard")}>

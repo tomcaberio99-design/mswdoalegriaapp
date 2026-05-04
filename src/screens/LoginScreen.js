@@ -23,12 +23,16 @@ export default function LoginScreen({
 
       <BrandHero
         compact
-        title="Login to your account"
-        subtitle="Use your registered email address and password to continue."
+        title="Sign in to the MSWDO portal"
+        subtitle="Use one account to manage assistance, protection, senior, solo parent, and 4Ps service requests."
+        metaItems={["Resident Access", "Staff Friendly"]}
       />
 
       <View style={styles.card}>
         <Text style={styles.sectionTitle}>Account Login</Text>
+        <Text style={styles.infoText}>
+          Front-desk staff can also use this account view to demonstrate service flows during assisted registration.
+        </Text>
 
         <Text style={styles.fieldLabel}>Email Address</Text>
         <TextInput
@@ -62,14 +66,8 @@ export default function LoginScreen({
           </View>
         ) : null}
 
-        <View style={styles.demoHint}>
-          <Text style={styles.demoHintText}>
-            Demo account: maria.santos@email.com / Password123
-          </Text>
-        </View>
-
         <Pressable style={styles.primaryButton} onPress={onLogin}>
-          <Text style={styles.primaryButtonText}>Login</Text>
+          <Text style={styles.primaryButtonText}>Sign In</Text>
         </Pressable>
       </View>
 
@@ -105,7 +103,13 @@ const styles = StyleSheet.create({
     color: theme.colors.text,
     fontWeight: "900",
     fontSize: 20,
-    marginBottom: 20
+    marginBottom: 10
+  },
+  infoText: {
+    color: theme.colors.muted,
+    fontSize: 12,
+    lineHeight: 19,
+    marginBottom: 18
   },
   fieldLabel: {
     color: theme.colors.text,
@@ -154,18 +158,6 @@ const styles = StyleSheet.create({
     color: theme.colors.red,
     fontWeight: "600",
     lineHeight: 20
-  },
-  demoHint: {
-    backgroundColor: theme.colors.blueSoft,
-    borderRadius: 12,
-    padding: 12,
-    marginBottom: 16
-  },
-  demoHintText: {
-    color: theme.colors.blue,
-    fontSize: 12,
-    fontWeight: "600",
-    lineHeight: 18
   },
   primaryButton: {
     minHeight: 58,

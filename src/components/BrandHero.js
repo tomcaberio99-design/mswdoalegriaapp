@@ -2,7 +2,13 @@ import React from "react";
 import { Image, StyleSheet, Text, View } from "react-native";
 import { theme } from "../theme";
 
-export default function BrandHero({ title, subtitle, compact = false }) {
+export default function BrandHero({
+  title,
+  subtitle,
+  compact = false,
+  accentLabel = "OFFICIAL",
+  metaItems = ["Citizen Services", "Responsive PWA"]
+}) {
   return (
     <View style={[styles.card, compact && styles.compactCard]}>
       <View style={styles.headerRow}>
@@ -10,11 +16,11 @@ export default function BrandHero({ title, subtitle, compact = false }) {
           <Image source={require("../../assets/mswdo-logo.jpg")} style={styles.logo} />
           <View style={styles.brandCopy}>
             <Text style={styles.brandName}>MSWDO ALEGRIA</Text>
-            <Text style={styles.brandSub}>Municipal Government of Alegria</Text>
+            <Text style={styles.brandSub}>Municipal Social Welfare and Development Office</Text>
           </View>
         </View>
         <View style={styles.headerPill}>
-          <Text style={styles.headerPillText}>OFFICIAL</Text>
+          <Text style={styles.headerPillText}>{accentLabel}</Text>
         </View>
       </View>
 
@@ -25,12 +31,11 @@ export default function BrandHero({ title, subtitle, compact = false }) {
         </View>
 
         <View style={styles.metaRow}>
-          <View style={styles.metaPill}>
-            <Text style={styles.metaPillText}>Citizen Services</Text>
-          </View>
-          <View style={styles.metaPill}>
-            <Text style={styles.metaPillText}>Mobile Access</Text>
-          </View>
+          {metaItems.map((item) => (
+            <View key={item} style={styles.metaPill}>
+              <Text style={styles.metaPillText}>{item}</Text>
+            </View>
+          ))}
         </View>
       </View>
     </View>
@@ -108,20 +113,20 @@ const styles = StyleSheet.create({
   },
   title: {
     color: theme.colors.white,
-    fontSize: 34,
+    fontSize: 32,
     lineHeight: 38,
     fontWeight: "900",
-    maxWidth: 260
+    maxWidth: 270
   },
   compactTitle: {
-    fontSize: 26,
+    fontSize: 24,
     lineHeight: 30
   },
   subtitle: {
     color: "rgba(255,255,255,0.82)",
     fontSize: 14,
     lineHeight: 20,
-    maxWidth: 270
+    maxWidth: 290
   },
   metaRow: {
     flexDirection: "row",

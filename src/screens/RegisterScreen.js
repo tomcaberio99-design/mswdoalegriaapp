@@ -5,7 +5,8 @@ import { barangays } from "../data/portalData";
 import { theme } from "../theme";
 
 const civilStatuses = ["Single", "Married", "Widowed", "Separated"];
-const STEPS = ["Personal", "Address", "Contact", "Review"];
+const accountRoles = ["Citizen", "Family Representative", "Barangay Staff"];
+const steps = ["Identity", "Address", "Account", "Ready"];
 
 function ChipGroup({ label, value, options, onChange }) {
   return (
@@ -59,22 +60,20 @@ export default function RegisterScreen({
 }) {
   const [step, setStep] = useState(1);
 
-  function goNext() {
-    if (step < 4) setStep(step + 1);
-  }
-
-  function goBack() {
-    if (step > 1) setStep(step - 1);
-    else onNavigate("home");
-  }
-
   function canProceed() {
     if (step === 1) {
-      return formData.firstName && formData.lastName && formData.birthDate && formData.sex && formData.civilStatus;
+      return (
+        formData.firstName &&
+        formData.lastName &&
+        formData.birthDate &&
+        formData.sex &&
+        formData.civilStatus &&
+        formData.accountRole
+      );
     }
 
     if (step === 2) {
-      return formData.barangay;
+      return formData.barangay && formData.city && formData.province;
     }
 
     if (step === 3) {
@@ -84,50 +83,49 @@ export default function RegisterScreen({
     return true;
   }
 
+  function goBack() {
+    if (step > 1) {
+      setStep((current) => current - 1);
+    } else {
+      onNavigate("home");
+    }
+  }
+
+  function goNext() {
+    if (step < 4) {
+      setStep((current) => current + 1);
+    }
+  }
+
   return (
     <ScreenContainer padded={false}>
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         <View style={styles.topBar}>
           <Pressable onPress={goBack}>
-            <Text style={styles.backButtonText}>{step > 1 ? "Back" : "Home"}</Text>
+            <Text style={styles.topAction}>{step > 1 ? "Back" : "Home"}</Text>
           </Pressable>
-          <Text style={styles.topTitle}>Register</Text>
+          <Text style={styles.topTitle}>Create Account</Text>
           <Pressable onPress={() => onNavigate("login")}>
             <Text style={styles.topAction}>Login</Text>
           </Pressable>
         </View>
 
         <View style={styles.progressCard}>
+          <Text style={styles.progressTitle}>MSWDO Account Setup</Text>
           <View style={styles.progressRow}>
-            {STEPS.map((label, index) => {
+            {steps.map((item, index) => {
               const stepNumber = index + 1;
+              const active = stepNumber === step;
               const done = step > stepNumber;
-              const active = step === stepNumber;
 
               return (
-                <View key={label} style={styles.progressStep}>
-                  <View
-                    style={[
-                      styles.progressDot,
-                      done && styles.doneDot,
-                      active && styles.activeDot
-                    ]}
-                  >
-                    <Text
-                      style={[
-                        styles.progressNumber,
-                        (done || active) && styles.activeProgressNumber
-                      ]}
-                    >
+                <View key={item} style={styles.progressStep}>
+                  <View style={[styles.progressDot, active && styles.progressDotActive, done && styles.progressDotDone]}>
+                    <Text style={[styles.progressNumber, (active || done) && styles.progressNumberActive]}>
                       {done ? "OK" : stepNumber}
                     </Text>
                   </View>
-                  {index < STEPS.length - 1 ? (
-                    <View style={[styles.progressLine, done && styles.doneLine]} />
-                  ) : null}
-                  <Text style={[styles.progressLabel, active && styles.activeProgressLabel]}>
-                    {label}
-                  </Text>
+                  <Text style={[styles.progressLabel, active && styles.progressLabelActive]}>{item}</Text>
                 </View>
               );
             })}
@@ -136,13 +134,13 @@ export default function RegisterScreen({
 
         {step === 1 ? (
           <View style={styles.card}>
-            <Text style={styles.sectionTitle}>Personal Information</Text>
+            <Text style={styles.sectionTitle}>Identity</Text>
             <FieldInput label="First Name *" placeholder="Maria" value={formData.firstName} onChangeText={(value) => onChange("firstName", value)} />
-            <FieldInput label="Middle Name (Optional)" placeholder="Dela Cruz" value={formData.middleName} onChangeText={(value) => onChange("middleName", value)} />
+            <FieldInput label="Middle Name" placeholder="Dela Cruz" value={formData.middleName} onChangeText={(value) => onChange("middleName", value)} />
             <FieldInput label="Last Name *" placeholder="Santos" value={formData.lastName} onChangeText={(value) => onChange("lastName", value)} />
             <FieldInput
               label="Birth Date * (YYYY-MM-DD)"
-              placeholder="1960-05-15"
+              placeholder="1988-07-15"
               value={formData.birthDate}
               onChangeText={(value) => onChange("birthDate", value)}
               keyboardType="numeric"
@@ -152,13 +150,11 @@ export default function RegisterScreen({
               <View style={styles.ageCard}>
                 <Text style={styles.ageLabel}>Computed Age</Text>
                 <Text style={styles.ageValue}>{age} years old</Text>
-                {age < 60 ? (
-                  <Text style={styles.ageWarning}>Applicants must be at least 60 years old to qualify.</Text>
-                ) : null}
               </View>
             ) : null}
             <ChipGroup label="Sex *" value={formData.sex} options={["Female", "Male"]} onChange={(value) => onChange("sex", value)} />
             <ChipGroup label="Civil Status *" value={formData.civilStatus} options={civilStatuses} onChange={(value) => onChange("civilStatus", value)} />
+            <ChipGroup label="Account Role *" value={formData.accountRole} options={accountRoles} onChange={(value) => onChange("accountRole", value)} />
           </View>
         ) : null}
 
@@ -167,32 +163,30 @@ export default function RegisterScreen({
             <Text style={styles.sectionTitle}>Address</Text>
             <FieldInput label="House No. / Purok" placeholder="Purok 2" value={formData.houseNo} onChangeText={(value) => onChange("houseNo", value)} />
             <FieldInput label="Street / Sitio" placeholder="Poblacion" value={formData.street} onChangeText={(value) => onChange("street", value)} />
-
             <Text style={styles.label}>Barangay *</Text>
-            <View style={styles.pickerGrid}>
+            <View style={styles.barangayGrid}>
               {barangays.map((barangay) => {
                 const active = formData.barangay === barangay;
 
                 return (
                   <Pressable
                     key={barangay}
-                    style={[styles.barangayChip, active && styles.activeBarangayChip]}
+                    style={[styles.barangayChip, active && styles.barangayChipActive]}
                     onPress={() => onChange("barangay", barangay)}
                   >
-                    <Text style={[styles.barangayText, active && styles.activeBarangayText]}>{barangay}</Text>
+                    <Text style={[styles.barangayChipText, active && styles.barangayChipTextActive]}>{barangay}</Text>
                   </Pressable>
                 );
               })}
             </View>
-
-            <FieldInput label="City / Municipality" placeholder="Alegria" value={formData.city} onChangeText={(value) => onChange("city", value)} />
-            <FieldInput label="Province" placeholder="Surigao del Norte" value={formData.province} onChangeText={(value) => onChange("province", value)} />
+            <FieldInput label="City / Municipality *" placeholder="Alegria" value={formData.city} onChangeText={(value) => onChange("city", value)} />
+            <FieldInput label="Province *" placeholder="Surigao del Norte" value={formData.province} onChangeText={(value) => onChange("province", value)} />
           </View>
         ) : null}
 
         {step === 3 ? (
           <View style={styles.card}>
-            <Text style={styles.sectionTitle}>Contact and Password</Text>
+            <Text style={styles.sectionTitle}>Contact and Security</Text>
             <FieldInput
               label="Contact Number"
               placeholder="09XX XXX XXXX"
@@ -230,17 +224,18 @@ export default function RegisterScreen({
 
         {step === 4 ? (
           <View style={styles.card}>
-            <Text style={styles.sectionTitle}>Review Information</Text>
-            <ReviewRow label="Full Name" value={[formData.firstName, formData.middleName, formData.lastName].filter(Boolean).join(" ")} />
-            <ReviewRow label="Birth Date" value={formData.birthDate} />
-            <ReviewRow label="Age" value={age ? `${age} years old` : "-"} />
-            <ReviewRow label="Sex" value={formData.sex || "-"} />
-            <ReviewRow label="Civil Status" value={formData.civilStatus || "-"} />
+            <Text style={styles.sectionTitle}>Ready for Services</Text>
+            <ReviewRow label="Name" value={[formData.firstName, formData.middleName, formData.lastName].filter(Boolean).join(" ")} />
+            <ReviewRow label="Role" value={formData.accountRole || "-"} />
+            <ReviewRow label="Birth Date" value={formData.birthDate || "-"} />
             <ReviewRow label="Barangay" value={formData.barangay || "-"} />
-            <ReviewRow label="City" value={formData.city} />
-            <ReviewRow label="Province" value={formData.province} />
-            <ReviewRow label="Contact" value={formData.phone || "-"} />
-            <ReviewRow label="Email" value={formData.email} />
+            <ReviewRow label="Email" value={formData.email || "-"} />
+            <View style={styles.reviewNotice}>
+              <Text style={styles.reviewNoticeTitle}>What happens next</Text>
+              <Text style={styles.reviewNoticeText}>
+                After account creation, you can open any MSWDO service desk, submit a request, and track updates from the same profile.
+              </Text>
+            </View>
           </View>
         ) : null}
 
@@ -252,18 +247,12 @@ export default function RegisterScreen({
 
         <View style={styles.navButtons}>
           {step < 4 ? (
-            <Pressable
-              style={[styles.nextButton, !canProceed() && styles.disabledButton]}
-              onPress={goNext}
-              disabled={!canProceed()}
-            >
+            <Pressable style={[styles.nextButton, !canProceed() && styles.disabledButton]} onPress={goNext} disabled={!canProceed()}>
               <Text style={styles.nextButtonText}>Continue</Text>
             </Pressable>
           ) : (
-            <Pressable style={styles.submitButton} onPress={onSubmit}>
-              <Text style={styles.submitText}>
-                {status === "submitting" ? "Submitting..." : "Submit Registration"}
-              </Text>
+            <Pressable style={[styles.submitButton, status === "submitting" && styles.disabledButton]} onPress={onSubmit} disabled={status === "submitting"}>
+              <Text style={styles.submitText}>{status === "submitting" ? "Creating Account..." : "Create Account"}</Text>
             </Pressable>
           )}
         </View>
@@ -293,19 +282,15 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     marginBottom: 18
   },
-  backButtonText: {
-    color: theme.colors.navy,
-    fontWeight: "700",
-    fontSize: 15
-  },
   topTitle: {
     color: theme.colors.text,
     fontSize: 18,
     fontWeight: "900"
   },
   topAction: {
-    color: theme.colors.blue,
-    fontWeight: "700"
+    color: theme.colors.navy,
+    fontWeight: "700",
+    fontSize: 15
   },
   progressCard: {
     backgroundColor: theme.colors.white,
@@ -315,15 +300,19 @@ const styles = StyleSheet.create({
     padding: 16,
     marginBottom: 16
   },
+  progressTitle: {
+    color: theme.colors.text,
+    fontWeight: "900",
+    fontSize: 16,
+    marginBottom: 14
+  },
   progressRow: {
     flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-start"
+    justifyContent: "space-between"
   },
   progressStep: {
     alignItems: "center",
-    flex: 1,
-    position: "relative"
+    flex: 1
   },
   progressDot: {
     width: 34,
@@ -336,41 +325,29 @@ const styles = StyleSheet.create({
     borderWidth: 1.5,
     borderColor: theme.colors.border
   },
-  activeDot: {
+  progressDotActive: {
     backgroundColor: theme.colors.navy,
     borderColor: theme.colors.navy
   },
-  doneDot: {
+  progressDotDone: {
     backgroundColor: theme.colors.green,
     borderColor: theme.colors.green
-  },
-  progressLine: {
-    position: "absolute",
-    top: 17,
-    left: "60%",
-    right: "-60%",
-    height: 2,
-    backgroundColor: theme.colors.border
-  },
-  doneLine: {
-    backgroundColor: theme.colors.green
   },
   progressNumber: {
     color: theme.colors.muted,
     fontWeight: "800",
     fontSize: 11
   },
-  activeProgressNumber: {
+  progressNumberActive: {
     color: theme.colors.white
   },
   progressLabel: {
     color: theme.colors.muted,
     fontSize: 10,
-    fontWeight: "600"
+    fontWeight: "700"
   },
-  activeProgressLabel: {
-    color: theme.colors.navy,
-    fontWeight: "800"
+  progressLabelActive: {
+    color: theme.colors.navy
   },
   card: {
     backgroundColor: theme.colors.white,
@@ -411,7 +388,6 @@ const styles = StyleSheet.create({
     flexWrap: "wrap"
   },
   chip: {
-    minWidth: 90,
     minHeight: 46,
     paddingHorizontal: 16,
     borderRadius: 14,
@@ -433,31 +409,23 @@ const styles = StyleSheet.create({
     color: theme.colors.white
   },
   ageCard: {
-    backgroundColor: theme.colors.goldSoft,
+    backgroundColor: theme.colors.blueSoft,
     borderRadius: 16,
     padding: 14,
-    marginBottom: 14,
-    borderWidth: 1,
-    borderColor: "#F0D060"
+    marginBottom: 14
   },
   ageLabel: {
-    color: "#9A6A00",
+    color: theme.colors.blue,
     fontWeight: "700",
     fontSize: 12
   },
   ageValue: {
     color: theme.colors.navyDeep,
     fontWeight: "900",
-    fontSize: 26,
+    fontSize: 24,
     marginTop: 2
   },
-  ageWarning: {
-    color: theme.colors.red,
-    fontSize: 12,
-    marginTop: 6,
-    fontWeight: "600"
-  },
-  pickerGrid: {
+  barangayGrid: {
     flexDirection: "row",
     flexWrap: "wrap",
     gap: 8,
@@ -471,16 +439,16 @@ const styles = StyleSheet.create({
     borderWidth: 1.5,
     borderColor: theme.colors.border
   },
-  activeBarangayChip: {
+  barangayChipActive: {
     backgroundColor: theme.colors.blueSoft,
     borderColor: theme.colors.blue
   },
-  barangayText: {
+  barangayChipText: {
     color: theme.colors.text,
     fontSize: 12,
     fontWeight: "700"
   },
-  activeBarangayText: {
+  barangayChipTextActive: {
     color: theme.colors.blue
   },
   reviewRow: {
@@ -501,6 +469,25 @@ const styles = StyleSheet.create({
     fontSize: 13,
     maxWidth: "55%",
     textAlign: "right"
+  },
+  reviewNotice: {
+    marginTop: 18,
+    borderRadius: 16,
+    padding: 14,
+    backgroundColor: theme.colors.surfaceAlt,
+    borderWidth: 1,
+    borderColor: theme.colors.borderLight
+  },
+  reviewNoticeTitle: {
+    color: theme.colors.navy,
+    fontWeight: "900",
+    fontSize: 13,
+    marginBottom: 6
+  },
+  reviewNoticeText: {
+    color: theme.colors.muted,
+    lineHeight: 19,
+    fontSize: 12
   },
   messageCard: {
     borderRadius: 16,

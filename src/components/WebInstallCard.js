@@ -27,7 +27,7 @@ export default function WebInstallCard() {
     function handleInstalled() {
       setIsInstalled(true);
       setDeferredPrompt(null);
-      setMessage("Installed successfully. Open it from your home screen anytime.");
+      setMessage("Installed successfully. Residents and staff can now open it directly from the home screen.");
     }
 
     window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
@@ -66,7 +66,7 @@ export default function WebInstallCard() {
       <View style={[styles.card, styles.successCard]}>
         <Text style={styles.successTitle}>Installed on this device</Text>
         <Text style={styles.successBody}>
-          The portal is ready on your home screen for faster senior-friendly access.
+          The full MSWDO service hub is ready for faster access even on low-end phones.
         </Text>
       </View>
     );
@@ -76,11 +76,11 @@ export default function WebInstallCard() {
     <View style={styles.card}>
       <View style={styles.headerRow}>
         <View style={styles.textColumn}>
-          <Text style={styles.kicker}>EASY ACCESS</Text>
-          <Text style={styles.title}>Install this app on your phone</Text>
+          <Text style={styles.kicker}>PWA ACCESS</Text>
+          <Text style={styles.title}>Install the MSWDO app</Text>
           <Text style={styles.body}>
-            Add the portal to the home screen so seniors and family members can open it
-            like a regular app.
+            Add the portal to the home screen so citizens and front-desk staff can open services
+            like a regular mobile app.
           </Text>
         </View>
         <Pressable style={styles.button} onPress={handleInstall}>
