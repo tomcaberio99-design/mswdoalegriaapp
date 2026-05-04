@@ -10,28 +10,45 @@ export default function DashboardScreen({ user, payoutStatus, onNavigate }) {
       <View style={styles.banner}>
         <View style={styles.bannerTop}>
           <View>
-            <Text style={styles.bannerKicker}>Dashboard</Text>
-            <Text style={styles.bannerTitle}>Good day,{"\n"}{user.profile.firstName}!</Text>
+            <Text style={styles.bannerKicker}>ACCOUNT OVERVIEW</Text>
+            <Text style={styles.bannerTitle}>{user.profile.firstName}, welcome back.</Text>
           </View>
           <View style={styles.noticeButton}>
-            <Text style={styles.noticeButtonText}>NEW</Text>
+            <Text style={styles.noticeButtonText}>LIVE</Text>
           </View>
         </View>
         <Text style={styles.bannerCopy}>
-          Here is your application status together with the latest service updates.
+          Review your application details, payout schedule, and the latest public updates.
         </Text>
       </View>
 
       <View style={styles.card}>
-        <Text style={styles.cardTitle}>Application Status</Text>
-        <View style={styles.statusRow}>
-          <View style={styles.statusBadge}>
-            <Text style={styles.statusBadgeText}>PENDING REVIEW</Text>
+        <View style={styles.cardHeader}>
+          <Text style={styles.cardTitle}>Application Status</Text>
+          <Text style={styles.cardMeta}>Updated today</Text>
+        </View>
+
+        <View style={styles.statusPanel}>
+          <View style={styles.statusRow}>
+            <View style={styles.statusBadge}>
+              <Text style={styles.statusBadgeText}>PENDING REVIEW</Text>
+            </View>
+          </View>
+          <Text style={styles.copy}>
+            Your application is currently being reviewed by the MSWDO staff.
+          </Text>
+        </View>
+
+        <View style={styles.statsGrid}>
+          <View style={styles.statCard}>
+            <Text style={styles.statLabel}>Reference ID</Text>
+            <Text style={styles.statValue}>{user.profile.referenceId}</Text>
+          </View>
+          <View style={styles.statCard}>
+            <Text style={styles.statLabel}>Barangay</Text>
+            <Text style={styles.statValue}>{user.profile.barangay}</Text>
           </View>
         </View>
-        <Text style={styles.copy}>
-          Your application is currently being reviewed by the MSWDO staff.
-        </Text>
       </View>
 
       <View style={styles.card}>
@@ -52,8 +69,18 @@ export default function DashboardScreen({ user, payoutStatus, onNavigate }) {
       >
         <View style={styles.payoutCardRow}>
           <View style={styles.payoutCardLeft}>
-            <View style={[styles.payoutBadge, payoutStatus.included ? styles.payoutBadgeSuccess : styles.payoutBadgePending]}>
-              <Text style={[styles.payoutBadgeText, payoutStatus.included ? styles.payoutBadgeTextSuccess : styles.payoutBadgeTextPending]}>
+            <View
+              style={[
+                styles.payoutBadge,
+                payoutStatus.included ? styles.payoutBadgeSuccess : styles.payoutBadgePending
+              ]}
+            >
+              <Text
+                style={[
+                  styles.payoutBadgeText,
+                  payoutStatus.included ? styles.payoutBadgeTextSuccess : styles.payoutBadgeTextPending
+                ]}
+              >
                 PAYOUT
               </Text>
             </View>
@@ -117,7 +144,8 @@ const styles = StyleSheet.create({
     color: theme.colors.white,
     fontSize: 26,
     lineHeight: 32,
-    fontWeight: "900"
+    fontWeight: "900",
+    maxWidth: 220
   },
   noticeButton: {
     minWidth: 44,
@@ -156,8 +184,18 @@ const styles = StyleSheet.create({
   cardTitle: {
     color: theme.colors.text,
     fontSize: 17,
-    fontWeight: "900",
-    marginBottom: 12
+    fontWeight: "900"
+  },
+  cardMeta: {
+    color: theme.colors.muted,
+    fontSize: 12,
+    fontWeight: "600"
+  },
+  statusPanel: {
+    borderRadius: 18,
+    padding: 14,
+    backgroundColor: theme.colors.surface,
+    marginBottom: 14
   },
   viewLink: {
     color: theme.colors.blue,
@@ -185,6 +223,29 @@ const styles = StyleSheet.create({
   copy: {
     color: theme.colors.muted,
     lineHeight: 20,
+    fontSize: 13
+  },
+  statsGrid: {
+    flexDirection: "row",
+    gap: 10
+  },
+  statCard: {
+    flex: 1,
+    borderRadius: 16,
+    backgroundColor: theme.colors.surfaceAlt,
+    padding: 12,
+    borderWidth: 1,
+    borderColor: theme.colors.borderLight
+  },
+  statLabel: {
+    color: theme.colors.muted,
+    fontWeight: "600",
+    fontSize: 11,
+    marginBottom: 6
+  },
+  statValue: {
+    color: theme.colors.navy,
+    fontWeight: "800",
     fontSize: 13
   },
   summaryRow: {

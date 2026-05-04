@@ -48,22 +48,23 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     minHeight: 52,
     borderRadius: 20,
-    gap: 4
+    gap: 4,
+    paddingTop: 4
   },
   activeTab: {
-    backgroundColor: theme.colors.navy
+    backgroundColor: theme.colors.surfaceAlt
   },
   badge: {
-    minWidth: 24,
-    height: 24,
-    borderRadius: 12,
+    minWidth: 26,
+    height: 26,
+    borderRadius: 13,
     backgroundColor: theme.colors.surfaceAlt,
     alignItems: "center",
     justifyContent: "center",
     paddingHorizontal: 6
   },
   activeBadge: {
-    backgroundColor: "rgba(255,255,255,0.16)"
+    backgroundColor: theme.colors.navy
   },
   badgeText: {
     color: theme.colors.navy,
@@ -79,6 +80,6 @@ const styles = StyleSheet.create({
     fontWeight: "700"
   },
   activeLabel: {
-    color: theme.colors.white
+    color: theme.colors.navy
   }
 });
