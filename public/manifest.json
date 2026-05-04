@@ -1,0 +1,22 @@
+{
+  "short_name": "Alegria SC",
+  "name": "Senior Citizen Services Portal",
+  "description": "Installable senior citizen services portal for registration, advisories, and payout updates.",
+  "icons": [
+    {
+      "src": "/logo192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/logo512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": ".",
+  "scope": "/",
+  "display": "standalone",
+  "theme_color": "#1C5FB8",
+  "background_color": "#EBF2FB"
+}

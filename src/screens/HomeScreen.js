@@ -2,6 +2,7 @@ import React from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import BrandHero from "../components/BrandHero";
 import ScreenContainer from "../components/ScreenContainer";
+import WebInstallCard from "../components/WebInstallCard";
 import { payoutBulletin, services } from "../data/portalData";
 import { theme } from "../theme";
 
@@ -20,6 +21,8 @@ export default function HomeScreen({ onNavigate }) {
         subtitle="Access registration, payout updates, and official citizen advisories in one place."
       />
 
+      <WebInstallCard />
+
       <View style={styles.noticeStrip}>
         <View style={styles.noticeStripDot} />
         <View style={styles.noticeStripBody}>
@@ -33,7 +36,7 @@ export default function HomeScreen({ onNavigate }) {
       <View style={styles.quickCard}>
         <View style={styles.quickCardHeader}>
           <Text style={styles.quickCardTitle}>Quick Access</Text>
-          <Text style={styles.quickCardMeta}>Most used</Text>
+          <Text style={styles.quickCardMeta}>Simple steps</Text>
         </View>
 
         <View style={styles.actionRow}>

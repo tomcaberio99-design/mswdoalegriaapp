@@ -1,4 +1,5 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
+import { Platform } from "react-native";
 import HomeScreen from "./src/screens/HomeScreen";
 import RegisterScreen from "./src/screens/RegisterScreen";
 import LoginScreen from "./src/screens/LoginScreen";
@@ -48,10 +49,28 @@ const demoAccount = {
   }
 };
 
+const STORAGE_KEYS = {
+  accounts: "mswdo-accounts",
+  sessionEmail: "mswdo-session-email"
+};
+
+function readWebStorage(key, fallback) {
+  if (Platform.OS !== "web" || typeof window === "undefined") {
+    return fallback;
+  }
+
+  try {
+    const rawValue = window.localStorage.getItem(key);
+    return rawValue ? JSON.parse(rawValue) : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
 export default function App() {
   const [activeScreen, setActiveScreen] = useState("home");
-  const [accounts, setAccounts] = useState([demoAccount]);
-  const [sessionEmail, setSessionEmail] = useState(null);
+  const [accounts, setAccounts] = useState(() => readWebStorage(STORAGE_KEYS.accounts, [demoAccount]));
+  const [sessionEmail, setSessionEmail] = useState(() => readWebStorage(STORAGE_KEYS.sessionEmail, null));
   const [formData, setFormData] = useState(initialForm);
   const [registerStatus, setRegisterStatus] = useState("idle");
   const [registerMessage, setRegisterMessage] = useState("");
@@ -66,6 +85,26 @@ export default function App() {
 
   const age = useMemo(() => calculateAge(formData.birthDate), [formData.birthDate]);
   const payoutStatus = getPayoutStatus(currentUser?.profile?.barangay);
+
+  useEffect(() => {
+    if (Platform.OS !== "web" || typeof window === "undefined") {
+      return;
+    }
+
+    window.localStorage.setItem(STORAGE_KEYS.accounts, JSON.stringify(accounts));
+  }, [accounts]);
+
+  useEffect(() => {
+    if (Platform.OS !== "web" || typeof window === "undefined") {
+      return;
+    }
+
+    if (sessionEmail) {
+      window.localStorage.setItem(STORAGE_KEYS.sessionEmail, JSON.stringify(sessionEmail));
+    } else {
+      window.localStorage.removeItem(STORAGE_KEYS.sessionEmail);
+    }
+  }, [sessionEmail]);
 
   function navigate(screen) {
     const protectedScreens = ["dashboard", "payout", "profile"];

@@ -3,11 +3,22 @@
     "name": "Senior Citizen Services Portal",
     "slug": "senior-citizen-services-portal",
     "version": "1.0.0",
+    "description": "Senior-friendly portal for registration, payout updates, and citizen advisories in Alegria.",
+    "icon": "./assets/mswdo-logo.jpg",
     "orientation": "portrait",
     "web": {
       "bundler": "metro",
       "output": "single",
-      "favicon": "./assets/mswdo-logo.jpg"
+      "favicon": "./assets/mswdo-logo.jpg",
+      "name": "Senior Citizen Services Portal",
+      "shortName": "Alegria SC",
+      "description": "Installable senior citizen services portal for LGU Alegria.",
+      "lang": "en",
+      "themeColor": "#1C5FB8",
+      "backgroundColor": "#EBF2FB",
+      "display": "standalone",
+      "startUrl": ".",
+      "scope": "/"
     },
     "assetBundlePatterns": [
       "**/*"
