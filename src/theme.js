@@ -1,35 +1,46 @@
 export const theme = {
   colors: {
-    navy: "#123D7A",
-    navyDeep: "#0A2956",
+    navy: "#0F3A7A",
+    navyDeep: "#082860",
+    navyLight: "#1A4D9E",
     blue: "#1C5FB8",
     blueSoft: "#EAF2FF",
-    gold: "#F3C144",
-    goldSoft: "#FFF5D9",
-    green: "#1D8E63",
-    greenSoft: "#E9F7F0",
-    redSoft: "#FBE9E7",
+    gold: "#F5C842",
+    goldDark: "#D4A017",
+    goldSoft: "#FFF8E1",
+    green: "#1A8C5E",
+    greenSoft: "#E6F5EE",
+    red: "#C0392B",
+    redSoft: "#FDECEA",
     white: "#FFFFFF",
-    text: "#16304A",
-    muted: "#6A7E95",
-    border: "#D7E3F2",
-    surface: "#F7FAFD",
-    surfaceAlt: "#EEF4FB"
+    text: "#0D2B45",
+    muted: "#5D7A94",
+    mutedLight: "#8FA3B8",
+    border: "#D0E0F0",
+    borderLight: "#E8F0FA",
+    surface: "#F5F9FE",
+    surfaceAlt: "#EBF2FB",
+    surfaceCard: "#FFFFFF"
   },
   radius: {
     xl: 28,
     lg: 22,
     md: 16,
-    sm: 12
+    sm: 12,
+    xs: 8
   },
   shadow: {
-    shadowColor: "#16304A",
-    shadowOpacity: 0.08,
-    shadowRadius: 20,
-    shadowOffset: {
-      width: 0,
-      height: 10
-    },
+    shadowColor: "#0D2B45",
+    shadowOpacity: 0.07,
+    shadowRadius: 16,
+    shadowOffset: { width: 0, height: 8 },
     elevation: 3
+  },
+  shadowMd: {
+    shadowColor: "#0D2B45",
+    shadowOpacity: 0.12,
+    shadowRadius: 24,
+    shadowOffset: { width: 0, height: 12 },
+    elevation: 5
   }
 };

@@ -1,17 +1,11 @@
-import React from "react";
-import {
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  View
-} from "react-native";
+import React, { useState } from "react";
+import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import ScreenContainer from "../components/ScreenContainer";
 import { barangays } from "../data/portalData";
 import { theme } from "../theme";
 
 const civilStatuses = ["Single", "Married", "Widowed", "Separated"];
+const STEPS = ["Personal", "Address", "Contact", "Review"];
 
 function ChipGroup({ label, value, options, onChange }) {
   return (
@@ -20,6 +14,7 @@ function ChipGroup({ label, value, options, onChange }) {
       <View style={styles.chipRow}>
         {options.map((option) => {
           const active = value === option;
+
           return (
             <Pressable
               key={option}
@@ -35,6 +30,24 @@ function ChipGroup({ label, value, options, onChange }) {
   );
 }
 
+function FieldInput({ label, placeholder, value, onChangeText, keyboardType, secureTextEntry, autoCapitalize }) {
+  return (
+    <View style={styles.fieldBlock}>
+      <Text style={styles.label}>{label}</Text>
+      <TextInput
+        style={styles.input}
+        placeholder={placeholder}
+        placeholderTextColor={theme.colors.mutedLight}
+        value={value}
+        onChangeText={onChangeText}
+        keyboardType={keyboardType}
+        secureTextEntry={secureTextEntry}
+        autoCapitalize={autoCapitalize || "words"}
+      />
+    </View>
+  );
+}
+
 export default function RegisterScreen({
   formData,
   age,
@@ -44,12 +57,39 @@ export default function RegisterScreen({
   onSubmit,
   onNavigate
 }) {
+  const [step, setStep] = useState(1);
+
+  function goNext() {
+    if (step < 4) setStep(step + 1);
+  }
+
+  function goBack() {
+    if (step > 1) setStep(step - 1);
+    else onNavigate("home");
+  }
+
+  function canProceed() {
+    if (step === 1) {
+      return formData.firstName && formData.lastName && formData.birthDate && formData.sex && formData.civilStatus;
+    }
+
+    if (step === 2) {
+      return formData.barangay;
+    }
+
+    if (step === 3) {
+      return formData.email && formData.password && formData.confirmPassword;
+    }
+
+    return true;
+  }
+
   return (
     <ScreenContainer padded={false}>
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         <View style={styles.topBar}>
-          <Pressable onPress={() => onNavigate("home")}>
-            <Text style={styles.topAction}>Back</Text>
+          <Pressable onPress={goBack}>
+            <Text style={styles.backButtonText}>{step > 1 ? "Back" : "Home"}</Text>
           </Pressable>
           <Text style={styles.topTitle}>Register</Text>
           <Pressable onPress={() => onNavigate("login")}>
@@ -59,65 +99,150 @@ export default function RegisterScreen({
 
         <View style={styles.progressCard}>
           <View style={styles.progressRow}>
-            {[1, 2, 3, 4].map((step) => (
-              <View key={step} style={styles.progressStep}>
-                <View style={[styles.progressDot, step === 1 && styles.activeProgressDot]}>
-                  <Text style={[styles.progressNumber, step === 1 && styles.activeProgressNumber]}>{step}</Text>
-                </View>
-                <Text style={styles.progressLabel}>
-                  {["Personal", "Address", "Contact", "Review"][step - 1]}
-                </Text>
-              </View>
-            ))}
-          </View>
-        </View>
+            {STEPS.map((label, index) => {
+              const stepNumber = index + 1;
+              const done = step > stepNumber;
+              const active = step === stepNumber;
 
-        <View style={styles.card}>
-          <Text style={styles.sectionTitle}>Personal Information</Text>
-
-          <TextInput style={styles.input} placeholder="First Name" value={formData.firstName} onChangeText={(value) => onChange("firstName", value)} />
-          <TextInput style={styles.input} placeholder="Middle Name (Optional)" value={formData.middleName} onChangeText={(value) => onChange("middleName", value)} />
-          <TextInput style={styles.input} placeholder="Last Name" value={formData.lastName} onChangeText={(value) => onChange("lastName", value)} />
-          <TextInput style={styles.input} placeholder="Birth Date (YYYY-MM-DD)" value={formData.birthDate} onChangeText={(value) => onChange("birthDate", value)} />
-
-          <ChipGroup label="Sex" value={formData.sex} options={["Female", "Male"]} onChange={(value) => onChange("sex", value)} />
-          <ChipGroup label="Civil Status" value={formData.civilStatus} options={civilStatuses} onChange={(value) => onChange("civilStatus", value)} />
-
-          <View style={styles.ageCard}>
-            <Text style={styles.ageLabel}>Computed Age</Text>
-            <Text style={styles.ageValue}>{age || "--"}</Text>
-          </View>
-        </View>
-
-        <View style={styles.card}>
-          <Text style={styles.sectionTitle}>Address and Contact</Text>
-
-          <TextInput style={styles.input} placeholder="House No." value={formData.houseNo} onChangeText={(value) => onChange("houseNo", value)} />
-          <TextInput style={styles.input} placeholder="Street / Sitio" value={formData.street} onChangeText={(value) => onChange("street", value)} />
-
-          <Text style={styles.label}>Barangay</Text>
-          <View style={styles.pickerGrid}>
-            {barangays.map((barangay) => {
-              const active = formData.barangay === barangay;
               return (
-                <Pressable
-                  key={barangay}
-                  style={[styles.barangayChip, active && styles.activeBarangayChip]}
-                  onPress={() => onChange("barangay", barangay)}
-                >
-                  <Text style={[styles.barangayText, active && styles.activeBarangayText]}>{barangay}</Text>
-                </Pressable>
+                <View key={label} style={styles.progressStep}>
+                  <View
+                    style={[
+                      styles.progressDot,
+                      done && styles.doneDot,
+                      active && styles.activeDot
+                    ]}
+                  >
+                    <Text
+                      style={[
+                        styles.progressNumber,
+                        (done || active) && styles.activeProgressNumber
+                      ]}
+                    >
+                      {done ? "OK" : stepNumber}
+                    </Text>
+                  </View>
+                  {index < STEPS.length - 1 ? (
+                    <View style={[styles.progressLine, done && styles.doneLine]} />
+                  ) : null}
+                  <Text style={[styles.progressLabel, active && styles.activeProgressLabel]}>
+                    {label}
+                  </Text>
+                </View>
               );
             })}
           </View>
-
-          <TextInput style={styles.input} placeholder="City / Municipality" value={formData.city} onChangeText={(value) => onChange("city", value)} />
-          <TextInput style={styles.input} placeholder="Province" value={formData.province} onChangeText={(value) => onChange("province", value)} />
-          <TextInput style={styles.input} placeholder="Contact Number" value={formData.phone} onChangeText={(value) => onChange("phone", value)} />
-          <TextInput style={styles.input} placeholder="Email Address" value={formData.email} onChangeText={(value) => onChange("email", value)} autoCapitalize="none" keyboardType="email-address" />
-          <TextInput style={styles.input} placeholder="Password" value={formData.password} onChangeText={(value) => onChange("password", value)} secureTextEntry />
-          <TextInput style={styles.input} placeholder="Confirm Password" value={formData.confirmPassword} onChangeText={(value) => onChange("confirmPassword", value)} secureTextEntry />
         </View>
+
+        {step === 1 ? (
+          <View style={styles.card}>
+            <Text style={styles.sectionTitle}>Personal Information</Text>
+            <FieldInput label="First Name *" placeholder="Maria" value={formData.firstName} onChangeText={(value) => onChange("firstName", value)} />
+            <FieldInput label="Middle Name (Optional)" placeholder="Dela Cruz" value={formData.middleName} onChangeText={(value) => onChange("middleName", value)} />
+            <FieldInput label="Last Name *" placeholder="Santos" value={formData.lastName} onChangeText={(value) => onChange("lastName", value)} />
+            <FieldInput
+              label="Birth Date * (YYYY-MM-DD)"
+              placeholder="1960-05-15"
+              value={formData.birthDate}
+              onChangeText={(value) => onChange("birthDate", value)}
+              keyboardType="numeric"
+              autoCapitalize="none"
+            />
+            {age ? (
+              <View style={styles.ageCard}>
+                <Text style={styles.ageLabel}>Computed Age</Text>
+                <Text style={styles.ageValue}>{age} years old</Text>
+                {age < 60 ? (
+                  <Text style={styles.ageWarning}>Applicants must be at least 60 years old to qualify.</Text>
+                ) : null}
+              </View>
+            ) : null}
+            <ChipGroup label="Sex *" value={formData.sex} options={["Female", "Male"]} onChange={(value) => onChange("sex", value)} />
+            <ChipGroup label="Civil Status *" value={formData.civilStatus} options={civilStatuses} onChange={(value) => onChange("civilStatus", value)} />
+          </View>
+        ) : null}
+
+        {step === 2 ? (
+          <View style={styles.card}>
+            <Text style={styles.sectionTitle}>Address</Text>
+            <FieldInput label="House No. / Purok" placeholder="Purok 2" value={formData.houseNo} onChangeText={(value) => onChange("houseNo", value)} />
+            <FieldInput label="Street / Sitio" placeholder="Poblacion" value={formData.street} onChangeText={(value) => onChange("street", value)} />
+
+            <Text style={styles.label}>Barangay *</Text>
+            <View style={styles.pickerGrid}>
+              {barangays.map((barangay) => {
+                const active = formData.barangay === barangay;
+
+                return (
+                  <Pressable
+                    key={barangay}
+                    style={[styles.barangayChip, active && styles.activeBarangayChip]}
+                    onPress={() => onChange("barangay", barangay)}
+                  >
+                    <Text style={[styles.barangayText, active && styles.activeBarangayText]}>{barangay}</Text>
+                  </Pressable>
+                );
+              })}
+            </View>
+
+            <FieldInput label="City / Municipality" placeholder="Alegria" value={formData.city} onChangeText={(value) => onChange("city", value)} />
+            <FieldInput label="Province" placeholder="Surigao del Norte" value={formData.province} onChangeText={(value) => onChange("province", value)} />
+          </View>
+        ) : null}
+
+        {step === 3 ? (
+          <View style={styles.card}>
+            <Text style={styles.sectionTitle}>Contact and Password</Text>
+            <FieldInput
+              label="Contact Number"
+              placeholder="09XX XXX XXXX"
+              value={formData.phone}
+              onChangeText={(value) => onChange("phone", value)}
+              keyboardType="phone-pad"
+              autoCapitalize="none"
+            />
+            <FieldInput
+              label="Email Address *"
+              placeholder="sample@email.com"
+              value={formData.email}
+              onChangeText={(value) => onChange("email", value)}
+              keyboardType="email-address"
+              autoCapitalize="none"
+            />
+            <FieldInput
+              label="Password *"
+              placeholder="Minimum 6 characters"
+              value={formData.password}
+              onChangeText={(value) => onChange("password", value)}
+              secureTextEntry
+              autoCapitalize="none"
+            />
+            <FieldInput
+              label="Confirm Password *"
+              placeholder="Re-enter your password"
+              value={formData.confirmPassword}
+              onChangeText={(value) => onChange("confirmPassword", value)}
+              secureTextEntry
+              autoCapitalize="none"
+            />
+          </View>
+        ) : null}
+
+        {step === 4 ? (
+          <View style={styles.card}>
+            <Text style={styles.sectionTitle}>Review Information</Text>
+            <ReviewRow label="Full Name" value={[formData.firstName, formData.middleName, formData.lastName].filter(Boolean).join(" ")} />
+            <ReviewRow label="Birth Date" value={formData.birthDate} />
+            <ReviewRow label="Age" value={age ? `${age} years old` : "-"} />
+            <ReviewRow label="Sex" value={formData.sex || "-"} />
+            <ReviewRow label="Civil Status" value={formData.civilStatus || "-"} />
+            <ReviewRow label="Barangay" value={formData.barangay || "-"} />
+            <ReviewRow label="City" value={formData.city} />
+            <ReviewRow label="Province" value={formData.province} />
+            <ReviewRow label="Contact" value={formData.phone || "-"} />
+            <ReviewRow label="Email" value={formData.email} />
+          </View>
+        ) : null}
 
         {message ? (
           <View style={[styles.messageCard, status === "error" ? styles.errorCard : styles.successCard]}>
@@ -125,11 +250,34 @@ export default function RegisterScreen({
           </View>
         ) : null}
 
-        <Pressable style={styles.submitButton} onPress={onSubmit}>
-          <Text style={styles.submitText}>{status === "submitting" ? "Submitting..." : "Continue to Dashboard"}</Text>
-        </Pressable>
+        <View style={styles.navButtons}>
+          {step < 4 ? (
+            <Pressable
+              style={[styles.nextButton, !canProceed() && styles.disabledButton]}
+              onPress={goNext}
+              disabled={!canProceed()}
+            >
+              <Text style={styles.nextButtonText}>Continue</Text>
+            </Pressable>
+          ) : (
+            <Pressable style={styles.submitButton} onPress={onSubmit}>
+              <Text style={styles.submitText}>
+                {status === "submitting" ? "Submitting..." : "Submit Registration"}
+              </Text>
+            </Pressable>
+          )}
+        </View>
       </ScrollView>
     </ScreenContainer>
+  );
+}
+
+function ReviewRow({ label, value }) {
+  return (
+    <View style={styles.reviewRow}>
+      <Text style={styles.reviewLabel}>{label}</Text>
+      <Text style={styles.reviewValue}>{value}</Text>
+    </View>
   );
 }
 
@@ -145,14 +293,19 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     marginBottom: 18
   },
-  topAction: {
+  backButtonText: {
     color: theme.colors.navy,
-    fontWeight: "700"
+    fontWeight: "700",
+    fontSize: 15
   },
   topTitle: {
     color: theme.colors.text,
     fontSize: 18,
-    fontWeight: "800"
+    fontWeight: "900"
+  },
+  topAction: {
+    color: theme.colors.blue,
+    fontWeight: "700"
   },
   progressCard: {
     backgroundColor: theme.colors.white,
@@ -164,66 +317,93 @@ const styles = StyleSheet.create({
   },
   progressRow: {
     flexDirection: "row",
-    justifyContent: "space-between"
+    justifyContent: "space-between",
+    alignItems: "flex-start"
   },
   progressStep: {
     alignItems: "center",
-    flex: 1
+    flex: 1,
+    position: "relative"
   },
   progressDot: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
+    width: 34,
+    height: 34,
+    borderRadius: 17,
     backgroundColor: theme.colors.surfaceAlt,
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: 8
+    marginBottom: 6,
+    borderWidth: 1.5,
+    borderColor: theme.colors.border
   },
-  activeProgressDot: {
-    backgroundColor: theme.colors.navy
+  activeDot: {
+    backgroundColor: theme.colors.navy,
+    borderColor: theme.colors.navy
+  },
+  doneDot: {
+    backgroundColor: theme.colors.green,
+    borderColor: theme.colors.green
+  },
+  progressLine: {
+    position: "absolute",
+    top: 17,
+    left: "60%",
+    right: "-60%",
+    height: 2,
+    backgroundColor: theme.colors.border
+  },
+  doneLine: {
+    backgroundColor: theme.colors.green
   },
   progressNumber: {
     color: theme.colors.muted,
-    fontWeight: "800"
+    fontWeight: "800",
+    fontSize: 11
   },
   activeProgressNumber: {
     color: theme.colors.white
   },
   progressLabel: {
     color: theme.colors.muted,
-    fontSize: 11
+    fontSize: 10,
+    fontWeight: "600"
+  },
+  activeProgressLabel: {
+    color: theme.colors.navy,
+    fontWeight: "800"
   },
   card: {
     backgroundColor: theme.colors.white,
     borderRadius: theme.radius.lg,
     borderWidth: 1,
     borderColor: theme.colors.border,
-    padding: 16,
+    padding: 18,
     marginBottom: 16
   },
   sectionTitle: {
     color: theme.colors.text,
-    fontWeight: "800",
+    fontWeight: "900",
     fontSize: 18,
-    marginBottom: 14
-  },
-  input: {
-    minHeight: 54,
-    borderRadius: 16,
-    backgroundColor: theme.colors.surface,
-    borderWidth: 1,
-    borderColor: theme.colors.border,
-    paddingHorizontal: 14,
-    marginBottom: 12,
-    color: theme.colors.text
+    marginBottom: 18
   },
   fieldBlock: {
-    marginBottom: 12
+    marginBottom: 14
   },
   label: {
     color: theme.colors.text,
     fontWeight: "700",
+    fontSize: 13,
     marginBottom: 8
+  },
+  input: {
+    minHeight: 56,
+    borderRadius: 16,
+    backgroundColor: theme.colors.surface,
+    borderWidth: 1.5,
+    borderColor: theme.colors.border,
+    paddingHorizontal: 16,
+    color: theme.colors.text,
+    fontSize: 16
   },
   chipRow: {
     flexDirection: "row",
@@ -231,16 +411,19 @@ const styles = StyleSheet.create({
     flexWrap: "wrap"
   },
   chip: {
-    minWidth: 96,
-    minHeight: 44,
-    paddingHorizontal: 14,
+    minWidth: 90,
+    minHeight: 46,
+    paddingHorizontal: 16,
     borderRadius: 14,
     backgroundColor: theme.colors.surfaceAlt,
     alignItems: "center",
-    justifyContent: "center"
+    justifyContent: "center",
+    borderWidth: 1.5,
+    borderColor: theme.colors.border
   },
   activeChip: {
-    backgroundColor: theme.colors.navy
+    backgroundColor: theme.colors.navy,
+    borderColor: theme.colors.navy
   },
   chipText: {
     color: theme.colors.text,
@@ -251,36 +434,45 @@ const styles = StyleSheet.create({
   },
   ageCard: {
     backgroundColor: theme.colors.goldSoft,
-    borderRadius: 18,
+    borderRadius: 16,
     padding: 14,
-    marginTop: 6
+    marginBottom: 14,
+    borderWidth: 1,
+    borderColor: "#F0D060"
   },
   ageLabel: {
     color: "#9A6A00",
-    fontWeight: "700"
+    fontWeight: "700",
+    fontSize: 12
   },
   ageValue: {
     color: theme.colors.navyDeep,
     fontWeight: "900",
-    fontSize: 28,
-    marginTop: 4
+    fontSize: 26,
+    marginTop: 2
+  },
+  ageWarning: {
+    color: theme.colors.red,
+    fontSize: 12,
+    marginTop: 6,
+    fontWeight: "600"
   },
   pickerGrid: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: 10,
-    marginBottom: 12
+    gap: 8,
+    marginBottom: 14
   },
   barangayChip: {
     paddingHorizontal: 12,
     paddingVertical: 10,
-    borderRadius: 14,
+    borderRadius: 12,
     backgroundColor: theme.colors.surfaceAlt,
-    maxWidth: "48%"
+    borderWidth: 1.5,
+    borderColor: theme.colors.border
   },
   activeBarangayChip: {
     backgroundColor: theme.colors.blueSoft,
-    borderWidth: 1,
     borderColor: theme.colors.blue
   },
   barangayText: {
@@ -291,32 +483,75 @@ const styles = StyleSheet.create({
   activeBarangayText: {
     color: theme.colors.blue
   },
+  reviewRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: theme.colors.borderLight
+  },
+  reviewLabel: {
+    color: theme.colors.muted,
+    fontWeight: "600",
+    fontSize: 13
+  },
+  reviewValue: {
+    color: theme.colors.text,
+    fontWeight: "800",
+    fontSize: 13,
+    maxWidth: "55%",
+    textAlign: "right"
+  },
   messageCard: {
     borderRadius: 16,
     padding: 14,
-    marginBottom: 16
+    marginBottom: 16,
+    borderWidth: 1
   },
   errorCard: {
-    backgroundColor: theme.colors.redSoft
+    backgroundColor: theme.colors.redSoft,
+    borderColor: "#F5C0BA"
   },
   successCard: {
-    backgroundColor: theme.colors.greenSoft
+    backgroundColor: theme.colors.greenSoft,
+    borderColor: "#A5D6BE"
   },
   messageText: {
     color: theme.colors.text,
-    lineHeight: 20
+    lineHeight: 20,
+    fontWeight: "600"
   },
-  submitButton: {
-    minHeight: 56,
-    borderRadius: 18,
+  navButtons: {
+    gap: 12,
+    marginBottom: 20
+  },
+  nextButton: {
+    minHeight: 58,
+    borderRadius: 20,
     backgroundColor: theme.colors.navy,
     alignItems: "center",
     justifyContent: "center",
-    marginBottom: 20
+    ...theme.shadowMd
+  },
+  disabledButton: {
+    opacity: 0.45
+  },
+  nextButtonText: {
+    color: theme.colors.white,
+    fontWeight: "900",
+    fontSize: 17
+  },
+  submitButton: {
+    minHeight: 58,
+    borderRadius: 20,
+    backgroundColor: theme.colors.green,
+    alignItems: "center",
+    justifyContent: "center",
+    ...theme.shadowMd
   },
   submitText: {
     color: theme.colors.white,
-    fontWeight: "800",
+    fontWeight: "900",
     fontSize: 16
   }
 });
