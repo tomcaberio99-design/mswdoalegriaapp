@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import { Animated, Easing, Image, Pressable, StyleSheet, Text, View } from "react-native";
+import { Animated, Easing, Image, Linking, Pressable, StyleSheet, Text, View } from "react-native";
 import ScreenContainer from "../components/ScreenContainer";
 import WebInstallCard from "../components/WebInstallCard";
 import { homeAnnouncements, serviceCatalog } from "../data/portalData";
@@ -140,13 +140,18 @@ export default function HomeScreen({
             </View>
 
             {emergencyContacts.map((item, index) => (
-              <View
+              <Pressable
                 key={item.label}
-                style={[styles.contactRow, index > 0 && styles.contactRowBorder]}
+                style={({ pressed }) => [
+                  styles.contactRow,
+                  index > 0 && styles.contactRowBorder,
+                  pressed && styles.contactRowPressed
+                ]}
+                onPress={() => Linking.openURL(`tel:${item.value.replace(/[^0-9+]/g, "")}`)}
               >
                 <Text style={styles.contactLabel}>{item.label}</Text>
                 <Text style={styles.contactValue}>{item.value}</Text>
-              </View>
+              </Pressable>
             ))}
           </View>
         </AnimatedSection>
@@ -470,6 +475,9 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     gap: 12
   },
+  contactRowPressed: {
+    opacity: 0.72
+  },
   contactRowBorder: {
     borderTopWidth: 1,
     borderTopColor: theme.colors.borderLight
@@ -532,13 +540,13 @@ const styles = StyleSheet.create({
   serviceGrid: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: 12
+    gap: 8
   },
   serviceCard: {
-    width: "48.2%",
-    minHeight: 170,
+    width: "48.9%",
+    minHeight: 152,
     borderRadius: 20,
-    padding: 14
+    padding: 12
   },
   serviceBadge: {
     alignSelf: "flex-start",
@@ -554,19 +562,19 @@ const styles = StyleSheet.create({
   },
   serviceTitle: {
     color: theme.colors.text,
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: "900",
-    marginBottom: 6
+    marginBottom: 5
   },
   serviceSummary: {
     color: theme.colors.muted,
-    fontSize: 12,
-    lineHeight: 18,
+    fontSize: 11,
+    lineHeight: 17,
     flex: 1
   },
   serviceLink: {
-    marginTop: 10,
-    fontSize: 12,
+    marginTop: 8,
+    fontSize: 11,
     fontWeight: "900"
   },
   noticeRow: {

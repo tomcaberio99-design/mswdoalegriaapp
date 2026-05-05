@@ -14,12 +14,12 @@ export default function BottomTabBar({ activeScreen, onNavigate }) {
     <View>
       <View style={styles.bottomMeta}>
         <Text style={styles.versionText}>Version 1.0.0</Text>
+        <Text style={styles.developerFooter}>Developed by: Rusty Tommy</Text>
       </View>
 
       <View style={styles.shell}>
         {tabs.map((tab) => {
           const active = activeScreen === tab.key;
-          const showDeveloper = tab.key === "profile";
 
           return (
             <Pressable key={tab.key} onPress={() => onNavigate(tab.key)} style={[styles.tab, active && styles.activeTab]}>
@@ -34,7 +34,6 @@ export default function BottomTabBar({ activeScreen, onNavigate }) {
                 ) : null}
               </View>
               <Text style={[styles.label, active && styles.activeLabel]}>{tab.label}</Text>
-              {showDeveloper ? <Text style={styles.developerText}>Developed by: Rusty Tommy</Text> : null}
             </Pressable>
           );
         })}
@@ -49,14 +48,21 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     paddingTop: 2,
-    paddingBottom: 12,
-    minHeight: 20,
+    paddingBottom: 10,
+    minHeight: 30,
     backgroundColor: theme.colors.background
   },
   versionText: {
     color: theme.colors.muted,
     fontSize: 11,
     fontWeight: "700",
+    textAlign: "center"
+  },
+  developerFooter: {
+    color: theme.colors.muted,
+    fontSize: 9,
+    fontStyle: "italic",
+    marginTop: 2,
     textAlign: "center"
   },
   shell: {
@@ -109,15 +115,6 @@ const styles = StyleSheet.create({
   },
   activeLabel: {
     color: theme.colors.primary
-  },
-  developerText: {
-    position: "absolute",
-    top: "100%",
-    right: 16,
-    marginTop: 4,
-    color: theme.colors.muted,
-    fontSize: 9,
-    fontStyle: "italic"
   },
   alertDot: {
     position: "absolute",
