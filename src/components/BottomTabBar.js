@@ -11,91 +11,121 @@ const tabs = [
 
 export default function BottomTabBar({ activeScreen, onNavigate }) {
   return (
-    <View style={styles.container}>
-      {tabs.map((tab) => {
-        const active = activeScreen === tab.key;
+    <View>
+      <View style={styles.bottomMeta}>
+        <Text style={styles.versionText}>Version 1.0.0</Text>
+      </View>
 
-        return (
-          <Pressable
-            key={tab.key}
-            onPress={() => onNavigate(tab.key)}
-            style={[styles.tab, active && styles.activeTab]}
-          >
-            <View style={styles.iconWrap}>
-              <View style={[styles.badge, active && styles.activeBadge]}>
-                <Text style={styles.badgeText}>{tab.icon}</Text>
+      <View style={styles.shell}>
+        {tabs.map((tab) => {
+          const active = activeScreen === tab.key;
+          const showDeveloper = tab.key === "profile";
+
+          return (
+            <Pressable key={tab.key} onPress={() => onNavigate(tab.key)} style={[styles.tab, active && styles.activeTab]}>
+              <View style={styles.iconWrap}>
+                <View style={[styles.iconBadge, active && styles.activeBadge]}>
+                  <Text style={styles.iconText}>{tab.icon}</Text>
+                </View>
+                {tab.alert ? (
+                  <View style={styles.alertDot}>
+                    <Text style={styles.alertText}>{tab.alert}</Text>
+                  </View>
+                ) : null}
               </View>
-              {tab.alert ? <View style={styles.alertDot}><Text style={styles.alertText}>{tab.alert}</Text></View> : null}
-            </View>
-            <Text style={[styles.label, active && styles.activeLabel]}>{tab.label}</Text>
-          </Pressable>
-        );
-      })}
+              <Text style={[styles.label, active && styles.activeLabel]}>{tab.label}</Text>
+              {showDeveloper ? <Text style={styles.developerText}>Developed by: Rusty Tommy</Text> : null}
+            </Pressable>
+          );
+        })}
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  bottomMeta: {
+    position: "relative",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingTop: 2,
+    paddingBottom: 12,
+    minHeight: 20,
+    backgroundColor: theme.colors.background
+  },
+  versionText: {
+    color: theme.colors.muted,
+    fontSize: 11,
+    fontWeight: "700",
+    textAlign: "center"
+  },
+  shell: {
     flexDirection: "row",
     backgroundColor: theme.colors.white,
     borderTopWidth: 1,
     borderTopColor: theme.colors.border,
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-    paddingTop: 8,
-    paddingBottom: 14,
-    paddingHorizontal: 8,
+    paddingTop: 10,
+    paddingBottom: 18,
+    paddingHorizontal: 10,
     shadowColor: "#000000",
     shadowOpacity: 0.08,
     shadowRadius: 24,
     shadowOffset: { width: 0, height: -8 },
-    elevation: 6
+    elevation: 8
   },
   tab: {
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    minHeight: 50,
-    borderRadius: 12,
-    gap: 3,
-    paddingVertical: 6
+    minHeight: 58,
+    borderRadius: 14,
+    gap: 4,
+    paddingVertical: 6,
+    position: "relative"
   },
   activeTab: {
-    backgroundColor: "#EFF6FF"
+    backgroundColor: theme.colors.accentSoft
   },
   iconWrap: {
     position: "relative"
   },
-  badge: {
-    width: 32,
-    height: 32,
-    borderRadius: 10,
+  iconBadge: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
     alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#F8FAFC"
+    justifyContent: "center"
   },
   activeBadge: {
-    backgroundColor: theme.colors.navy
+    backgroundColor: theme.colors.primary
   },
-  badgeText: {
-    fontSize: 14
+  iconText: {
+    fontSize: 18
   },
   label: {
     color: theme.colors.muted,
-    fontSize: 9,
+    fontSize: 10,
     fontWeight: "700"
   },
   activeLabel: {
-    color: theme.colors.navy
+    color: theme.colors.primary
+  },
+  developerText: {
+    position: "absolute",
+    top: "100%",
+    right: 16,
+    marginTop: 4,
+    color: theme.colors.muted,
+    fontSize: 9,
+    fontStyle: "italic"
   },
   alertDot: {
     position: "absolute",
-    top: -2,
-    right: -2,
-    width: 14,
-    height: 14,
-    borderRadius: 7,
+    top: -4,
+    right: -6,
+    width: 16,
+    height: 16,
+    borderRadius: 8,
     backgroundColor: "#EF4444",
     borderWidth: 2,
     borderColor: theme.colors.white,
@@ -104,7 +134,7 @@ const styles = StyleSheet.create({
   },
   alertText: {
     color: theme.colors.white,
-    fontSize: 7,
+    fontSize: 8,
     fontWeight: "900"
   }
 });
