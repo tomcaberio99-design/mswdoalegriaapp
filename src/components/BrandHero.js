@@ -11,14 +11,6 @@ export default function BrandHero({
 }) {
   return (
     <View style={[styles.shell, compact && styles.compactShell]}>
-      <View style={styles.statusBar}>
-        <Text style={styles.statusText}>8:48 AM</Text>
-        <View style={styles.statusIcons}>
-          <Text style={styles.statusText}>📶</Text>
-          <Text style={styles.statusText}>🔋</Text>
-        </View>
-      </View>
-
       <View style={[styles.card, compact && styles.compactCard]}>
         <View style={styles.orbTop} />
         <View style={styles.orbBottom} />
@@ -70,28 +62,10 @@ const styles = StyleSheet.create({
   compactShell: {
     borderRadius: 28
   },
-  statusBar: {
-    backgroundColor: "#0D2C6B",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 24,
-    paddingTop: 12,
-    paddingBottom: 10
-  },
-  statusText: {
-    color: theme.colors.white,
-    fontSize: 12,
-    fontWeight: "700"
-  },
-  statusIcons: {
-    flexDirection: "row",
-    gap: 6
-  },
   card: {
     backgroundColor: "#0D2C6B",
     paddingHorizontal: 24,
-    paddingTop: 24,
+    paddingTop: 26,
     paddingBottom: 30,
     position: "relative",
     overflow: "hidden"

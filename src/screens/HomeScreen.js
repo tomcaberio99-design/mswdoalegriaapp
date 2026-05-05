@@ -1,5 +1,5 @@
-import React from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import React, { useEffect, useRef } from "react";
+import { Animated, Easing, Pressable, StyleSheet, Text, View } from "react-native";
 import BrandHero from "../components/BrandHero";
 import ScreenContainer from "../components/ScreenContainer";
 import WebInstallCard from "../components/WebInstallCard";
@@ -34,12 +34,15 @@ export default function HomeScreen({
       <BrandHero
         title="One portal for every"
         subtitle="Residents and staff can access assistance, CICL, VAWDO, senior citizen, solo parent, and 4Ps workflows in one mobile-friendly PWA."
-        metaItems={["6 Service Modules", "Accessible on Web"]}
+        metaItems={["6 Service Modules", "Accessible on Web", "Version 1.0.0"]}
       />
 
-      <WebInstallCard />
+      <AnimatedSection delay={80}>
+        <WebInstallCard />
+      </AnimatedSection>
 
-      <View style={styles.emergencyCard}>
+      <AnimatedSection delay={150}>
+        <View style={styles.emergencyCard}>
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Emergency & Safe Contacts</Text>
           <Text style={styles.sectionMeta}>Quick reach</Text>
@@ -55,8 +58,10 @@ export default function HomeScreen({
           </View>
         ))}
       </View>
+      </AnimatedSection>
 
-      <View style={styles.summaryCard}>
+      <AnimatedSection delay={220}>
+        <View style={styles.summaryCard}>
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>{currentUser ? "Account Snapshot" : "Get Started"}</Text>
           <Text style={styles.sectionMeta}>{currentUser ? "Today" : "New users"}</Text>
@@ -99,8 +104,10 @@ export default function HomeScreen({
           </>
         )}
       </View>
+      </AnimatedSection>
 
-      <View style={styles.card}>
+      <AnimatedSection delay={290}>
+        <View style={styles.card}>
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>MSWDO Services</Text>
           <Text style={styles.sectionMeta}>Tap a desk</Text>
@@ -126,9 +133,11 @@ export default function HomeScreen({
           })}
         </View>
       </View>
+      </AnimatedSection>
 
       {applications.length ? (
-        <View style={styles.card}>
+        <AnimatedSection delay={360}>
+          <View style={styles.card}>
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>Recent Requests</Text>
             <Pressable onPress={() => onNavigate("requests")}>
@@ -152,9 +161,11 @@ export default function HomeScreen({
             </Pressable>
           ))}
         </View>
+        </AnimatedSection>
       ) : null}
 
-      <View style={styles.card}>
+      <AnimatedSection delay={430}>
+        <View style={styles.card}>
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Office Advisories</Text>
           <Text style={styles.sectionMeta}>Updated</Text>
@@ -175,7 +186,44 @@ export default function HomeScreen({
           </View>
         ))}
       </View>
+      </AnimatedSection>
+
+      <AnimatedSection delay={500}>
+        <View style={styles.versionWrap}>
+          <Text style={styles.versionText}>MSWDO Connect v1.0.0</Text>
+        </View>
+      </AnimatedSection>
     </ScreenContainer>
+  );
+}
+
+function AnimatedSection({ children, delay = 0 }) {
+  const opacity = useRef(new Animated.Value(0)).current;
+  const translateY = useRef(new Animated.Value(18)).current;
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(opacity, {
+        toValue: 1,
+        duration: 420,
+        delay,
+        easing: Easing.out(Easing.cubic),
+        useNativeDriver: true
+      }),
+      Animated.timing(translateY, {
+        toValue: 0,
+        duration: 420,
+        delay,
+        easing: Easing.out(Easing.cubic),
+        useNativeDriver: true
+      })
+    ]).start();
+  }, [delay, opacity, translateY]);
+
+  return (
+    <Animated.View style={{ opacity, transform: [{ translateY }] }}>
+      {children}
+    </Animated.View>
   );
 }
 
@@ -318,13 +366,14 @@ const styles = StyleSheet.create({
   serviceGrid: {
     flexDirection: "row",
     flexWrap: "wrap",
-    gap: 12
+    justifyContent: "space-between"
   },
   serviceCard: {
-    width: "48%",
+    width: "48.3%",
     borderRadius: 20,
     padding: 14,
-    minHeight: 170
+    minHeight: 170,
+    marginBottom: 12
   },
   serviceBadge: {
     minWidth: 52,
@@ -418,5 +467,16 @@ const styles = StyleSheet.create({
     color: theme.colors.muted,
     fontSize: 12,
     lineHeight: 18
+  },
+  versionWrap: {
+    alignItems: "center",
+    paddingTop: 2,
+    paddingBottom: 8
+  },
+  versionText: {
+    color: theme.colors.muted,
+    fontSize: 11,
+    fontWeight: "700",
+    letterSpacing: 0.2
   }
 });
