@@ -74,21 +74,19 @@ export default function WebInstallCard() {
 
   return (
     <View style={styles.card}>
-      <View style={styles.headerRow}>
-        <View style={styles.textColumn}>
-          <Text style={styles.kicker}>PWA ACCESS</Text>
-          <Text style={styles.title}>Install MSWDO Connect</Text>
-          <Text style={styles.body}>
-            Add the portal to the home screen so citizens and front-desk staff can open services
-            like a regular mobile app.
-          </Text>
-        </View>
+      <View style={styles.iconWrap}>
+        <Text style={styles.iconText}>📲</Text>
+      </View>
+      <View style={styles.textColumn}>
+        <Text style={styles.title}>Install MSWDO Connect</Text>
+        <Text style={styles.body}>
+          Add to your home screen. It works like a native app, with the same MSWDO logo and
+          faster access for residents and staff.
+        </Text>
         <Pressable style={styles.button} onPress={handleInstall}>
-          <Text style={styles.buttonText}>Install App</Text>
+          <Text style={styles.buttonText}>Install Now</Text>
         </Pressable>
       </View>
-
-      <Text style={styles.helper}>Best experience: Android Chrome on phone or tablet.</Text>
       {message ? <Text style={styles.feedback}>{message}</Text> : null}
     </View>
   );
@@ -96,64 +94,79 @@ export default function WebInstallCard() {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: theme.colors.greenSoft,
-    borderRadius: theme.radius.lg,
-    borderWidth: 1,
-    borderColor: "#C9E8DA",
-    padding: 16,
+    backgroundColor: "#ECFDF5",
+    borderRadius: 20,
+    borderWidth: 1.5,
+    borderColor: "#A7F3D0",
+    padding: 18,
     marginBottom: 16,
-    gap: 10
+    gap: 14,
+    flexDirection: "row",
+    alignItems: "flex-start",
+    shadowColor: "#1D8A57",
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 6 },
+    elevation: 2
   },
   successCard: {
     backgroundColor: "#EDF8F1"
   },
-  headerRow: {
-    gap: 14
+  iconWrap: {
+    width: 46,
+    height: 46,
+    borderRadius: 13,
+    backgroundColor: theme.colors.green,
+    alignItems: "center",
+    justifyContent: "center"
+  },
+  iconText: {
+    fontSize: 20
   },
   textColumn: {
     gap: 6
   },
-  kicker: {
-    color: theme.colors.green,
-    fontSize: 11,
-    fontWeight: "900",
-    letterSpacing: 0.7
-  },
   title: {
-    color: theme.colors.text,
-    fontSize: 20,
-    lineHeight: 26,
-    fontWeight: "900"
+    color: "#064E3B",
+    fontSize: 14,
+    lineHeight: 18,
+    fontWeight: "800"
   },
   body: {
-    color: theme.colors.muted,
-    fontSize: 13,
-    lineHeight: 19
+    color: "#065F46",
+    fontSize: 12,
+    lineHeight: 18,
+    marginBottom: 6,
+    maxWidth: 250
   },
   button: {
-    minHeight: 52,
-    borderRadius: 16,
+    minHeight: 36,
+    borderRadius: 999,
     backgroundColor: theme.colors.green,
     alignItems: "center",
     justifyContent: "center",
     paddingHorizontal: 18,
-    alignSelf: "flex-start"
+    alignSelf: "flex-start",
+    shadowColor: "#16A34A",
+    shadowOpacity: 0.28,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 2
   },
   buttonText: {
     color: theme.colors.white,
-    fontSize: 14,
-    fontWeight: "900"
-  },
-  helper: {
-    color: theme.colors.muted,
     fontSize: 12,
-    lineHeight: 18
+    fontWeight: "900"
   },
   feedback: {
     color: theme.colors.text,
     fontSize: 12,
     lineHeight: 18,
-    fontWeight: "700"
+    fontWeight: "700",
+    position: "absolute",
+    left: 18,
+    right: 18,
+    bottom: 12
   },
   successTitle: {
     color: theme.colors.green,

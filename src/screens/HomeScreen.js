@@ -32,7 +32,7 @@ export default function HomeScreen({
   return (
     <ScreenContainer activeScreen="home" onNavigate={onNavigate} showTabs>
       <BrandHero
-        title="One portal for every MSWDO service"
+        title="One portal for every"
         subtitle="Residents and staff can access assistance, CICL, VAWDO, senior citizen, solo parent, and 4Ps workflows in one mobile-friendly PWA."
         metaItems={["6 Service Modules", "Accessible on Web"]}
       />
@@ -41,13 +41,17 @@ export default function HomeScreen({
 
       <View style={styles.emergencyCard}>
         <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Emergency and Safe Contacts</Text>
+          <Text style={styles.sectionTitle}>Emergency & Safe Contacts</Text>
           <Text style={styles.sectionMeta}>Quick reach</Text>
         </View>
+        <View style={styles.officeRow}>
+          <Text style={styles.contactLabel}>MSWDO Office</Text>
+          <Text style={styles.contactValue}>📞 (086) 123-4567</Text>
+        </View>
         {emergencyContacts.map((item, index) => (
-          <View key={item.label} style={[styles.contactRow, index > 0 && styles.rowDivider]}>
+          <View key={item.label} style={[styles.contactRow, styles.rowDivider]}>
             <Text style={styles.contactLabel}>{item.label}</Text>
-            <Text style={styles.contactValue}>{item.value}</Text>
+            <Text style={styles.contactValue}>📞 {item.value}</Text>
           </View>
         ))}
       </View>
@@ -116,7 +120,7 @@ export default function HomeScreen({
                 </View>
                 <Text style={styles.serviceTitle}>{service.title}</Text>
                 <Text style={styles.serviceSummary}>{service.summary}</Text>
-                <Text style={[styles.serviceLink, { color: accent.strong }]}>Open service</Text>
+                <Text style={[styles.serviceLink, { color: accent.strong }]}>Open service →</Text>
               </Pressable>
             );
           })}
@@ -186,17 +190,17 @@ function StatCard({ label, value }) {
 
 const styles = StyleSheet.create({
   emergencyCard: {
-    backgroundColor: theme.colors.roseSoft,
-    borderRadius: theme.radius.lg,
-    borderWidth: 1,
+    backgroundColor: "#FFF1F2",
+    borderRadius: 20,
+    borderWidth: 1.5,
     borderColor: "#F4C7D4",
     padding: 16,
     marginBottom: 16
   },
   summaryCard: {
     backgroundColor: theme.colors.white,
-    borderRadius: theme.radius.lg,
-    borderWidth: 1,
+    borderRadius: 20,
+    borderWidth: 1.5,
     borderColor: theme.colors.border,
     padding: 16,
     marginBottom: 16,
@@ -204,8 +208,8 @@ const styles = StyleSheet.create({
   },
   card: {
     backgroundColor: theme.colors.white,
-    borderRadius: theme.radius.lg,
-    borderWidth: 1,
+    borderRadius: 20,
+    borderWidth: 1.5,
     borderColor: theme.colors.border,
     padding: 16,
     marginBottom: 16,
@@ -219,13 +223,19 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     color: theme.colors.text,
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: "900"
   },
   sectionMeta: {
     color: theme.colors.muted,
     fontSize: 12,
     fontWeight: "700"
+  },
+  officeRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    gap: 12,
+    paddingVertical: 10
   },
   contactRow: {
     flexDirection: "row",
@@ -243,7 +253,7 @@ const styles = StyleSheet.create({
     flex: 1
   },
   contactValue: {
-    color: theme.colors.rose,
+    color: "#E11D48",
     fontWeight: "900"
   },
   statGrid: {
@@ -254,7 +264,7 @@ const styles = StyleSheet.create({
   statCard: {
     flex: 1,
     borderRadius: 16,
-    backgroundColor: theme.colors.surface,
+    backgroundColor: "#F8FAFC",
     padding: 14,
     borderWidth: 1,
     borderColor: theme.colors.borderLight
@@ -311,16 +321,16 @@ const styles = StyleSheet.create({
     gap: 12
   },
   serviceCard: {
-    width: "47%",
+    width: "48%",
     borderRadius: 20,
     padding: 14,
-    minHeight: 174
+    minHeight: 170
   },
   serviceBadge: {
-    minWidth: 48,
+    minWidth: 52,
     alignSelf: "flex-start",
-    paddingHorizontal: 10,
-    paddingVertical: 6,
+    paddingHorizontal: 12,
+    paddingVertical: 5,
     borderRadius: 999,
     marginBottom: 10
   },
@@ -332,7 +342,7 @@ const styles = StyleSheet.create({
   },
   serviceTitle: {
     color: theme.colors.text,
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: "900",
     marginBottom: 6
   },
@@ -385,7 +395,7 @@ const styles = StyleSheet.create({
   noticeMarker: {
     width: 10,
     height: 10,
-    borderRadius: 5,
+    borderRadius: 6,
     backgroundColor: theme.colors.blue,
     marginTop: 6
   },

@@ -38,7 +38,7 @@ export default function ScreenContainer({
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: theme.colors.surfaceAlt
+    backgroundColor: "#F0F4FF"
   },
   root: {
     flex: 1
@@ -47,13 +47,13 @@ const styles = StyleSheet.create({
     paddingBottom: 112
   },
   padded: {
-    paddingHorizontal: 18,
-    paddingTop: 18
+    paddingHorizontal: 16,
+    paddingTop: 14
   },
   tabDock: {
     position: "absolute",
-    left: 18,
-    right: 18,
-    bottom: 18
+    left: 0,
+    right: 0,
+    bottom: 0
   }
 });
