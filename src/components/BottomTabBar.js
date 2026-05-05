@@ -65,7 +65,7 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: theme.colors.border,
     paddingTop: 10,
-    paddingBottom: 30,
+    paddingBottom: 34,
     paddingHorizontal: 10,
     shadowColor: "#000000",
     shadowOpacity: 0.08,
@@ -112,10 +112,10 @@ const styles = StyleSheet.create({
   },
   developerText: {
     position: "absolute",
-    top: 58,
-    left: 0,
-    right: 0,
-    textAlign: "center",
+    top: 62,
+    left: -54,
+    width: 150,
+    textAlign: "left",
     color: theme.colors.muted,
     fontSize: 8.5,
     fontStyle: "italic"
