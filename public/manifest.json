@@ -1,7 +1,7 @@
 {
-  "short_name": "MSWDO",
-  "name": "MSWDO Alegria",
-  "description": "Installable MSWDO Alegria service hub for assistance, protection, and family welfare workflows.",
+  "short_name": "Connect",
+  "name": "MSWDO Connect",
+  "description": "Installable MSWDO Connect service hub for assistance, protection, and family welfare workflows.",
   "icons": [
     {
       "src": "/logo192.png",

@@ -15,7 +15,7 @@ export default function BrandHero({
         <View style={styles.identityRow}>
           <Image source={require("../../assets/mswdo-logo.jpg")} style={styles.logo} />
           <View style={styles.brandCopy}>
-            <Text style={styles.brandName}>MSWDO ALEGRIA</Text>
+            <Text style={styles.brandName}>MSWDO CONNECT</Text>
             <Text style={styles.brandSub}>Municipal Social Welfare and Development Office</Text>
           </View>
         </View>

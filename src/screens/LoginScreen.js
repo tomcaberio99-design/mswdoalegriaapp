@@ -23,7 +23,7 @@ export default function LoginScreen({
 
       <BrandHero
         compact
-        title="Sign in to the MSWDO portal"
+        title="Sign in to MSWDO Connect"
         subtitle="Use one account to manage assistance, protection, senior, solo parent, and 4Ps service requests."
         metaItems={["Resident Access", "Staff Friendly"]}
       />

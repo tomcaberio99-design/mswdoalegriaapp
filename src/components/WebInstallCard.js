@@ -66,7 +66,7 @@ export default function WebInstallCard() {
       <View style={[styles.card, styles.successCard]}>
         <Text style={styles.successTitle}>Installed on this device</Text>
         <Text style={styles.successBody}>
-          The full MSWDO service hub is ready for faster access even on low-end phones.
+          MSWDO Connect is ready for faster access even on low-end phones.
         </Text>
       </View>
     );
@@ -77,7 +77,7 @@ export default function WebInstallCard() {
       <View style={styles.headerRow}>
         <View style={styles.textColumn}>
           <Text style={styles.kicker}>PWA ACCESS</Text>
-          <Text style={styles.title}>Install the MSWDO app</Text>
+          <Text style={styles.title}>Install MSWDO Connect</Text>
           <Text style={styles.body}>
             Add the portal to the home screen so citizens and front-desk staff can open services
             like a regular mobile app.

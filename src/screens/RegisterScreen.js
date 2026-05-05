@@ -111,7 +111,7 @@ export default function RegisterScreen({
         </View>
 
         <View style={styles.progressCard}>
-          <Text style={styles.progressTitle}>MSWDO Account Setup</Text>
+          <Text style={styles.progressTitle}>MSWDO Connect Account Setup</Text>
           <View style={styles.progressRow}>
             {steps.map((item, index) => {
               const stepNumber = index + 1;

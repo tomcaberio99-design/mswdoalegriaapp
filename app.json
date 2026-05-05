@@ -1,18 +1,18 @@
 {
   "expo": {
-    "name": "MSWDO Alegria",
+    "name": "MSWDO Connect",
     "slug": "mswdo-alegria",
     "version": "1.0.0",
-    "description": "Unified MSWDO service hub for assistance, CICL, VAWDO, senior citizen, solo parent, and 4Ps workflows in Alegria.",
+    "description": "MSWDO Connect is a unified service hub for assistance, CICL, VAWDO, senior citizen, solo parent, and 4Ps workflows in Alegria.",
     "icon": "./assets/mswdo-logo.jpg",
     "orientation": "portrait",
     "web": {
       "bundler": "metro",
       "output": "single",
       "favicon": "./assets/mswdo-logo.jpg",
-      "name": "MSWDO Alegria",
-      "shortName": "MSWDO",
-      "description": "Installable MSWDO Alegria service hub for citizen and staff workflows.",
+      "name": "MSWDO Connect",
+      "shortName": "Connect",
+      "description": "Installable MSWDO Connect service hub for citizen and staff workflows.",
       "lang": "en",
       "themeColor": "#1C5FB8",
       "backgroundColor": "#EBF2FB",

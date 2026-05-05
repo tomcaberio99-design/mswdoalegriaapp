@@ -128,7 +128,7 @@ const demoAccount = {
   inbox: [
     {
       id: "INBOX-100001",
-      title: "Welcome to the MSWDO portal",
+      title: "Welcome to MSWDO Connect",
       body: "Your citizen account can now be used to track service requests and receive follow-up notices.",
       tone: "info",
       dateLabel: "May 1, 2026"
