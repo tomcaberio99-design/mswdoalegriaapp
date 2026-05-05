@@ -1,10 +1,5 @@
 import React from "react";
-import {
-  SafeAreaView,
-  ScrollView,
-  StyleSheet,
-  View
-} from "react-native";
+import { Platform, SafeAreaView, ScrollView, StyleSheet, View } from "react-native";
 import { theme } from "../theme";
 import BottomTabBar from "./BottomTabBar";
 
@@ -38,20 +33,21 @@ export default function ScreenContainer({
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: "#F0F4FF"
+    backgroundColor: theme.colors.background
   },
   root: {
-    flex: 1
+    flex: 1,
+    backgroundColor: theme.colors.background
   },
   content: {
-    paddingBottom: 104
+    paddingBottom: 138
   },
   padded: {
     paddingHorizontal: 16,
-    paddingTop: 14
+    paddingTop: 0
   },
   tabDock: {
-    position: "absolute",
+    position: Platform.OS === "web" ? "fixed" : "absolute",
     left: 0,
     right: 0,
     bottom: 0,
