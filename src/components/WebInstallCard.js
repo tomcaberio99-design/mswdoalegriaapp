@@ -25,9 +25,9 @@ export default function WebInstallCard() {
     } else if (/iPhone|iPad|iPod/i.test(userAgent)) {
       setInstallHint("On iPhone: tap Share then Add to Home Screen.");
     } else if (/Android/i.test(userAgent)) {
-      setInstallHint("On Android: use Chrome, then tap Install App.");
+      setInstallHint("On Android: use Chrome, then tap Install App or Add to Home screen.");
     } else {
-      setInstallHint("Use Chrome or Safari on your phone for the best install experience.");
+      setInstallHint("Use Chrome or Safari on phone for the best install experience.");
     }
 
     function handleBeforeInstallPrompt(event) {
@@ -51,16 +51,19 @@ export default function WebInstallCard() {
 
   async function handleInstall() {
     if (!deferredPrompt) {
+      if (typeof window !== "undefined") {
+        window.alert(installHint || "Open this app in Chrome or Safari and add it to the home screen.");
+      }
       return;
     }
 
     deferredPrompt.prompt();
     const choice = await deferredPrompt.userChoice;
-    if (choice.outcome !== "accepted") {
-      setDeferredPrompt(null);
-      return;
-    }
     setDeferredPrompt(null);
+
+    if (choice.outcome !== "accepted" && typeof window !== "undefined") {
+      window.alert("Install canceled. You can try again anytime.");
+    }
   }
 
   if (Platform.OS !== "web") {
@@ -70,14 +73,14 @@ export default function WebInstallCard() {
   return (
     <View style={[styles.card, isInstalled && styles.successCard]}>
       <View style={styles.iconWrap}>
-        <Text style={styles.iconText}>{isInstalled ? "✅" : "📥"}</Text>
+        <Text style={styles.iconText}>{isInstalled ? "✅" : "📲"}</Text>
       </View>
       <View style={styles.textColumn}>
-        <Text style={styles.title}>{isInstalled ? "Installed on this device" : "Install the MSWDO App"}</Text>
+        <Text style={styles.title}>{isInstalled ? "Installed on this device" : "Install MSWDO Connect"}</Text>
         <Text style={styles.body}>
           {isInstalled
-            ? "The app is ready for faster access and can be opened like a native app."
-            : "Add to your home screen. It works like a native app and no store download is needed."}
+            ? "MSWDO Connect is ready for faster access even on low-end phones."
+            : "Add to your home screen. It works like a native app, with the same MSWDO logo and faster access for residents and staff."}
         </Text>
         {!isInstalled ? (
           <Pressable style={({ pressed }) => [styles.button, pressed && styles.buttonPressed]} onPress={handleInstall}>
@@ -96,51 +99,61 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     borderWidth: 1.5,
     borderColor: "#A7F3D0",
-    padding: 20,
-    gap: 16,
+    padding: 18,
+    marginBottom: 16,
+    gap: 14,
     flexDirection: "row",
-    alignItems: "flex-start"
+    alignItems: "flex-start",
+    shadowColor: "#1D8A57",
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 6 },
+    elevation: 2
   },
   successCard: {
-    backgroundColor: "#DDF8EA"
+    backgroundColor: "#EDF8F1"
   },
   iconWrap: {
-    width: 48,
-    height: 48,
-    borderRadius: 14,
+    width: 46,
+    height: 46,
+    borderRadius: 13,
     backgroundColor: theme.colors.green,
     alignItems: "center",
-    justifyContent: "center",
-    shadowColor: theme.colors.green,
-    shadowOpacity: 0.35,
-    shadowRadius: 12,
-    shadowOffset: { width: 0, height: 4 },
-    elevation: 3
+    justifyContent: "center"
   },
   iconText: {
-    fontSize: 22
+    fontSize: 20
   },
   textColumn: {
-    flex: 1,
-    gap: 4
+    gap: 6,
+    flex: 1
   },
   title: {
-    fontSize: 15,
+    color: "#064E3B",
+    fontSize: 14,
+    lineHeight: 18,
     fontWeight: "800",
-    color: "#064E3B"
   },
   body: {
-    fontSize: 12,
     color: "#065F46",
+    fontSize: 12,
     lineHeight: 18,
-    marginBottom: 10
+    marginBottom: 6,
+    maxWidth: 250
   },
   button: {
+    minHeight: 36,
+    alignItems: "center",
+    justifyContent: "center",
     alignSelf: "flex-start",
     backgroundColor: theme.colors.green,
     borderRadius: 999,
-    paddingHorizontal: 20,
-    paddingVertical: 10
+    paddingHorizontal: 18,
+    shadowColor: "#16A34A",
+    shadowOpacity: 0.28,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 2
   },
   buttonPressed: {
     opacity: 0.88
@@ -154,6 +167,6 @@ const styles = StyleSheet.create({
     color: "#047857",
     fontSize: 11,
     lineHeight: 16,
-    marginTop: 6
+    marginTop: 2
   }
 });
