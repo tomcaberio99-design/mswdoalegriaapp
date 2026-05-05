@@ -6,12 +6,14 @@ export default function WebInstallCard() {
   const [deferredPrompt, setDeferredPrompt] = useState(null);
   const [isInstalled, setIsInstalled] = useState(false);
   const [message, setMessage] = useState("");
+  const [installHint, setInstallHint] = useState("");
 
   useEffect(() => {
     if (Platform.OS !== "web" || typeof window === "undefined") {
       return undefined;
     }
 
+    const userAgent = window.navigator.userAgent || "";
     const standalone =
       window.matchMedia?.("(display-mode: standalone)")?.matches || window.navigator.standalone;
 
@@ -19,9 +21,20 @@ export default function WebInstallCard() {
       setIsInstalled(true);
     }
 
+    if (/FBAN|FBAV|Instagram|Messenger/i.test(userAgent)) {
+      setInstallHint("Open this site in Chrome or Safari first. In-app browsers usually block app install.");
+    } else if (/iPhone|iPad|iPod/i.test(userAgent)) {
+      setInstallHint("On iPhone: tap Share then Add to Home Screen.");
+    } else if (/Android/i.test(userAgent)) {
+      setInstallHint("On Android: use Chrome, then tap Install App or Add to Home screen.");
+    } else {
+      setInstallHint("Use Chrome or Safari on phone for the best install experience.");
+    }
+
     function handleBeforeInstallPrompt(event) {
       event.preventDefault();
       setDeferredPrompt(event);
+      setMessage("");
     }
 
     function handleInstalled() {
@@ -41,7 +54,7 @@ export default function WebInstallCard() {
 
   async function handleInstall() {
     if (!deferredPrompt) {
-      setMessage("Open this app in Android Chrome and choose Install App or Add to Home screen.");
+      setMessage(installHint || "Open this app in Chrome or Safari and add it to the home screen.");
       return;
     }
 
@@ -86,6 +99,7 @@ export default function WebInstallCard() {
         <Pressable style={styles.button} onPress={handleInstall}>
           <Text style={styles.buttonText}>Install Now</Text>
         </Pressable>
+        {installHint ? <Text style={styles.helper}>{installHint}</Text> : null}
       </View>
       {message ? <Text style={styles.feedback}>{message}</Text> : null}
     </View>
@@ -124,7 +138,8 @@ const styles = StyleSheet.create({
     fontSize: 20
   },
   textColumn: {
-    gap: 6
+    gap: 6,
+    flex: 1
   },
   title: {
     color: "#064E3B",
@@ -158,15 +173,19 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: "900"
   },
+  helper: {
+    color: "#047857",
+    fontSize: 11,
+    lineHeight: 16,
+    marginTop: 2
+  },
   feedback: {
     color: theme.colors.text,
     fontSize: 12,
     lineHeight: 18,
     fontWeight: "700",
-    position: "absolute",
-    left: 18,
-    right: 18,
-    bottom: 12
+    marginTop: 6,
+    flexBasis: "100%"
   },
   successTitle: {
     color: theme.colors.green,

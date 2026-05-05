@@ -41,10 +41,11 @@ const styles = StyleSheet.create({
     backgroundColor: theme.colors.white,
     borderTopWidth: 1,
     borderTopColor: theme.colors.border,
-    borderRadius: 24,
-    paddingTop: 10,
-    paddingBottom: 18,
-    paddingHorizontal: 10,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    paddingTop: 8,
+    paddingBottom: 14,
+    paddingHorizontal: 8,
     shadowColor: "#000000",
     shadowOpacity: 0.08,
     shadowRadius: 24,
@@ -55,10 +56,10 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    minHeight: 56,
-    borderRadius: 14,
-    gap: 4,
-    paddingVertical: 8
+    minHeight: 50,
+    borderRadius: 12,
+    gap: 3,
+    paddingVertical: 6
   },
   activeTab: {
     backgroundColor: "#EFF6FF"
@@ -67,22 +68,22 @@ const styles = StyleSheet.create({
     position: "relative"
   },
   badge: {
-    width: 40,
-    height: 40,
-    borderRadius: 12,
+    width: 32,
+    height: 32,
+    borderRadius: 10,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "transparent"
+    backgroundColor: "#F8FAFC"
   },
   activeBadge: {
     backgroundColor: theme.colors.navy
   },
   badgeText: {
-    fontSize: 18
+    fontSize: 14
   },
   label: {
     color: theme.colors.muted,
-    fontSize: 10,
+    fontSize: 9,
     fontWeight: "700"
   },
   activeLabel: {
@@ -90,11 +91,11 @@ const styles = StyleSheet.create({
   },
   alertDot: {
     position: "absolute",
-    top: -3,
-    right: -4,
-    width: 15,
-    height: 15,
-    borderRadius: 8,
+    top: -2,
+    right: -2,
+    width: 14,
+    height: 14,
+    borderRadius: 7,
     backgroundColor: "#EF4444",
     borderWidth: 2,
     borderColor: theme.colors.white,
@@ -103,7 +104,7 @@ const styles = StyleSheet.create({
   },
   alertText: {
     color: theme.colors.white,
-    fontSize: 8,
+    fontSize: 7,
     fontWeight: "900"
   }
 });

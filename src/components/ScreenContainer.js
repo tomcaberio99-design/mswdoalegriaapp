@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
     flex: 1
   },
   content: {
-    paddingBottom: 112
+    paddingBottom: 104
   },
   padded: {
     paddingHorizontal: 16,
@@ -54,6 +54,8 @@ const styles = StyleSheet.create({
     position: "absolute",
     left: 0,
     right: 0,
-    bottom: 0
+    bottom: 0,
+    zIndex: 20,
+    elevation: 20
   }
 });

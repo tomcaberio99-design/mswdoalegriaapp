@@ -1,5 +1,5 @@
-import React from "react";
-import { Image, StyleSheet, Text, View } from "react-native";
+import React, { useEffect, useRef } from "react";
+import { Animated, Easing, Image, StyleSheet, Text, View } from "react-native";
 import { theme } from "../theme";
 
 export default function BrandHero({
@@ -9,6 +9,24 @@ export default function BrandHero({
   accentLabel = "OFFICIAL",
   metaItems = ["Citizen Services", "Responsive PWA"]
 }) {
+  const spin = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.loop(
+      Animated.timing(spin, {
+        toValue: 1,
+        duration: 5000,
+        easing: Easing.linear,
+        useNativeDriver: true
+      })
+    ).start();
+  }, [spin]);
+
+  const ringRotate = spin.interpolate({
+    inputRange: [0, 1],
+    outputRange: ["0deg", "360deg"]
+  });
+
   return (
     <View style={[styles.shell, compact && styles.compactShell]}>
       <View style={[styles.card, compact && styles.compactCard]}>
@@ -18,6 +36,9 @@ export default function BrandHero({
         <View style={styles.headerRow}>
           <View style={styles.identityRow}>
             <View style={styles.logoRing}>
+              <Animated.View
+                style={[styles.logoOrbit, { transform: [{ rotate: ringRotate }] }]}
+              />
               <Image source={require("../../assets/mswdo-logo.jpg")} style={styles.logo} />
             </View>
             <View style={styles.brandCopy}>
@@ -106,22 +127,33 @@ const styles = StyleSheet.create({
     gap: 12
   },
   logoRing: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
+    width: 58,
+    height: 58,
+    borderRadius: 29,
     backgroundColor: theme.colors.white,
     alignItems: "center",
     justifyContent: "center",
+    position: "relative",
     shadowColor: "#000000",
     shadowOpacity: 0.2,
     shadowRadius: 16,
     shadowOffset: { width: 0, height: 4 },
     elevation: 4
   },
+  logoOrbit: {
+    position: "absolute",
+    width: 72,
+    height: 72,
+    borderRadius: 36,
+    borderWidth: 1.5,
+    borderColor: "rgba(255,255,255,0.45)",
+    borderTopColor: "#93C5FD",
+    borderRightColor: "rgba(255,255,255,0.18)"
+  },
   logo: {
-    width: 46,
-    height: 46,
-    borderRadius: 23
+    width: 48,
+    height: 48,
+    borderRadius: 24
   },
   brandCopy: {
     flex: 1
